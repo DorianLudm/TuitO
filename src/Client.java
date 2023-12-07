@@ -1,11 +1,15 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Client{
     private String pseudo;
+    private List<Message> messages;
 
     public Client(String pseudo){
         this.pseudo = pseudo;
+        this.messages = new ArrayList<Message>();
     }
 
     public void run(){
