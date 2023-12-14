@@ -12,6 +12,14 @@ public class Client{
         this.messages = new ArrayList<Message>();
     }
 
+    public String getPseudo(){
+        return this.pseudo;
+    }
+
+    public List<Message> getMessages(){
+        return this.messages;
+    }
+
     public void run(){
         while(true){
             try{
