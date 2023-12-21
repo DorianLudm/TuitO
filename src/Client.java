@@ -20,10 +20,10 @@ public class Client{
         return this.messages;
     }
 
-    public void run(){
+    void main(){
         while(true){
             try{
-                Socket socketClient = new Socket(identiteServ, portServ);
+                Socket socketClient = new Socket("localhost", 8080);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
                 String message = reader.readLine();
                 System.out.println(message);

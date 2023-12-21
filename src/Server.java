@@ -31,7 +31,7 @@ public class Server{
         }
     }
 
-    public void start() throws IOException{
+    void main() throws IOException{
         int port = 5555;
         while(true){
             ServerSocket socketServeur = new ServerSocket(port);
