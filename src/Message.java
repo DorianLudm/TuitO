@@ -22,7 +22,12 @@ public class Message {
         return this.message;
     }
 
-    public Client getAutheur(){
-        return this.sender;
+    public String getPseudoClient(){
+        return this.sender.getPseudo();
+    }
+
+    @Override
+    public String toString() {
+        return this.getPseudoClient() + ": " + this.getMessage();
     }
 }

@@ -22,6 +22,11 @@ public class Client{
     }
 
     public static void main(String[] args) {
+        Scanner scannerPseudo = new Scanner(System.in);
+        System.out.print("Entrez votre pseudo: ");
+        String pseudo = scannerPseudo.nextLine();
+        Client client = new Client(pseudo);
+
         Socket socketClient = null;
         PrintWriter writer = null;
         Scanner scanner = new Scanner(System.in);
@@ -53,11 +58,11 @@ public class Client{
                     break;
                 }
 
-                String message = input;
+                Message message = new Message(input, client);
                 System.out.print("\033[1A"); // Move up
                 System.out.print("\033[2K"); // Erase line content
-                writer.println(message);
-                System.out.println("You sent: " + message);
+                writer.println(message.toString());
+                System.out.println("You sent: " + message.getMessage());
             }
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
@@ -67,6 +72,7 @@ public class Client{
                 if (writer != null) writer.close();
                 if (socketClient != null) socketClient.close();
                 if (scanner != null) scanner.close();
+                if (scannerPseudo != null) scannerPseudo.close();
             } catch (IOException e) {
                 System.out.println("Error closing resources: " + e.getMessage());
             }
