@@ -48,12 +48,16 @@ public class Client{
             System.out.print("Enter a message to send (or 'quit' to exit): \n");
             while (true) {
                 String input = scanner.nextLine();
-    
+
                 if ("quit".equalsIgnoreCase(input)) {
                     break;
                 }
-    
-                writer.println(input);
+
+                String message = input;
+                System.out.print("\033[1A"); // Move up
+                System.out.print("\033[2K"); // Erase line content
+                writer.println(message);
+                System.out.println("You sent: " + message);
             }
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
