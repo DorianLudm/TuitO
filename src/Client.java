@@ -45,8 +45,8 @@ public class Client{
             }).start();
     
             // Thread d'envoi de message vers le serveur
+            System.out.print("Enter a message to send (or 'quit' to exit): \n");
             while (true) {
-                System.out.print("Enter a message to send (or 'quit' to exit): ");
                 String input = scanner.nextLine();
     
                 if ("quit".equalsIgnoreCase(input)) {
