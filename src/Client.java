@@ -1,7 +1,9 @@
 import java.io.*;
 import java.net.*;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Client{
     private String pseudo;
@@ -20,16 +22,31 @@ public class Client{
         return this.messages;
     }
 
-    void main(){
-        while(true){
-            try{
-                Socket socketClient = new Socket("localhost", 8080);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
+    public static void main(String[] args) {
+        // Initialisation de la connexion
+        Socket socketClient = null;
+        BufferedReader reader = null;
+        PrintWriter writer = null;
+        try {
+            socketClient = new Socket("localhost", 8080);
+            reader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
+            writer = new PrintWriter(socketClient.getOutputStream(), true);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        // Boucle de lecture des messages
+        while (true) {
+            try {
                 String message = reader.readLine();
                 System.out.println(message);
-                socketClient.close();
-            }
-            catch(Exception e){
+
+                // Send a message to the server
+                Scanner scanner = new Scanner(System.in);
+                System.out.print("Enter a message to send: ");
+                String input = scanner.nextLine();
+                writer.println(input);
+            } catch (Exception e) {
                 System.out.println(e);
             }
         }

@@ -6,13 +6,9 @@ import java.net.*;
 
 public class Server{
     private List<ClientHandler> clients;
-    private String identiteServ;
-    private int portServ;
 
     public Server(){
         clients = new ArrayList<ClientHandler>();
-        identiteServ = "localhost";
-        portServ = 8080;
     }
 
     //Envoie du message à tout les utilisateurs connectés
@@ -31,21 +27,24 @@ public class Server{
         }
     }
 
-    void main() throws IOException{
-        int port = 5555;
+    //Fermeture de la connexion avec le client
+    public void close(ClientHandler client){
+        this.clients.remove(client);
+    }
+
+    public static void main(String[] args) throws IOException{
+        int port = 8080;
+        Server server = new Server();
         while(true){
             ServerSocket socketServeur = new ServerSocket(port);
             // Lors d'une connexion, on crée un nouveau thread pour le client
             Socket socketClient = socketServeur.accept();
-            Socket socketToClient = new Socket(socketClient.getInetAddress(), 5555);
             String addrClient = socketClient.getRemoteSocketAddress().toString();
-            ClientHandler client = new ClientHandler(new Client(addrClient), socketClient, this.identiteServ, this.portServ);
-            clients.add(client);
+            ClientHandler client = new ClientHandler(new Client(addrClient), socketClient, server);
+            server.clients.add(client);
             client.start();
             // On envoie un message à l'ensemble des clients
-            PrintWriter writer = new PrintWriter(socketToClient.getOutputStream(), true);
-            writer.print("Un nouveau client vient de se connecter! Il s'agit de" + addrClient);
-            socketServeur.close();
+            server.broadcast("Nouvelle connexion de " + addrClient);
         }
     }
 }

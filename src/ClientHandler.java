@@ -6,14 +6,12 @@ import java.net.Socket;
 public class ClientHandler extends Thread{
     private Client client;
     private Socket socketClient;
-    private String identiteServ;
-    private int portServ;
+    private Server server;
 
-    public ClientHandler(Client client, Socket socketClient, String identiteServ, int portServ){
+    public ClientHandler(Client client, Socket socketClient, Server server){
         this.client = client;
         this.socketClient = socketClient;
-        this.identiteServ = identiteServ;
-        this.portServ = portServ;
+        this.server = server;
     }
 
     public Client getClient(){
@@ -21,28 +19,35 @@ public class ClientHandler extends Thread{
     }
 
     // Envoie du message au client associé à l'instance de ClientHandler
-    public void broadcast(String msg){
-        try{
+    public void broadcast(String message) {
+        try {
             PrintWriter writer = new PrintWriter(this.socketClient.getOutputStream(), true);
-            writer.print(msg);
-        }
-        catch(Exception e){
+            writer.println(message);
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
 
+    public void close(){
+        try {
+            this.socketClient.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        this.server.close(this);
+    }
+
+    @Override
     public void run(){
-        while(true){
-            try{
-                Socket socketClient = new Socket(identiteServ, portServ);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
-                String message = reader.readLine();
-                System.out.println(message);
-                socketClient.close();
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(this.socketClient.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                this.server.broadcast(line, this.client);
             }
-            catch(Exception e){
-                System.out.println(e);
-            }
+        } catch (Exception e) {
+            System.out.println(e);
+            this.close();
         }
     }
 }
