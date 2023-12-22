@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -23,31 +22,49 @@ public class Client{
     }
 
     public static void main(String[] args) {
-        // Initialisation de la connexion
         Socket socketClient = null;
-        BufferedReader reader = null;
         PrintWriter writer = null;
+        Scanner scanner = new Scanner(System.in);
+        final BufferedReader[] readerContainer = new BufferedReader[1];
+    
         try {
             socketClient = new Socket("localhost", 8080);
-            reader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
+            readerContainer[0] = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
             writer = new PrintWriter(socketClient.getOutputStream(), true);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-        // Boucle de lecture des messages
-        while (true) {
-            try {
-                String message = reader.readLine();
-                System.out.println(message);
-
-                // Send a message to the server
-                Scanner scanner = new Scanner(System.in);
-                System.out.print("Enter a message to send: ");
+    
+            // Start a new thread to read messages from the server
+            new Thread(() -> {
+                try {
+                    String message;
+                    while ((message = readerContainer[0].readLine()) != null) {
+                        System.out.println(message);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Error reading from server: " + e.getMessage());
+                }
+            }).start();
+    
+            // Main thread to send messages to the server
+            while (true) {
+                System.out.print("Enter a message to send (or 'quit' to exit): ");
                 String input = scanner.nextLine();
+    
+                if ("quit".equalsIgnoreCase(input)) {
+                    break;
+                }
+    
                 writer.println(input);
-            } catch (Exception e) {
-                System.out.println(e);
+            }
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally {
+            try {
+                if (readerContainer[0] != null) readerContainer[0].close();
+                if (writer != null) writer.close();
+                if (socketClient != null) socketClient.close();
+                if (scanner != null) scanner.close();
+            } catch (IOException e) {
+                System.out.println("Error closing resources: " + e.getMessage());
             }
         }
     }
