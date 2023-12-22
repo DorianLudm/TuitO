@@ -32,7 +32,7 @@ public class Client{
             readerContainer[0] = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
             writer = new PrintWriter(socketClient.getOutputStream(), true);
     
-            // Start a new thread to read messages from the server
+            // Créer un thread secondaire pour lire les messages du serveur
             new Thread(() -> {
                 try {
                     String message;
@@ -44,7 +44,7 @@ public class Client{
                 }
             }).start();
     
-            // Main thread to send messages to the server
+            // Thread d'envoi de message vers le serveur
             while (true) {
                 System.out.print("Enter a message to send (or 'quit' to exit): ");
                 String input = scanner.nextLine();

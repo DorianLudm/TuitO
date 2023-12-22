@@ -32,19 +32,33 @@ public class Server{
         this.clients.remove(client);
     }
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();
-        while(true){
-            ServerSocket socketServeur = new ServerSocket(port);
-            // Lors d'une connexion, on crée un nouveau thread pour le client
-            Socket socketClient = socketServeur.accept();
-            String addrClient = socketClient.getRemoteSocketAddress().toString();
-            ClientHandler client = new ClientHandler(new Client(addrClient), socketClient, server);
-            server.clients.add(client);
-            client.start();
-            // On envoie un message à l'ensemble des clients
-            server.broadcast("Nouvelle connexion de " + addrClient);
+        ServerSocket socketServeur = null;
+    
+        try {
+            socketServeur = new ServerSocket(port);
+    
+            while (true) {
+                // Création d'un ClientHandler pour chaque nouvelle connexion
+                Socket socketClient = socketServeur.accept();
+                String addrClient = socketClient.getRemoteSocketAddress().toString();
+                ClientHandler client = new ClientHandler(new Client(addrClient), socketClient, server);
+                server.clients.add(client);
+                client.start();
+    
+                // Envoie d'un message de bienvenue à tout les utilisateurs connectés
+                server.broadcast("Nouvelle connexion de " + addrClient);
+            }
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally {
+            try {
+                if (socketServeur != null) socketServeur.close();
+            } catch (IOException e) {
+                System.out.println("Error closing server socket: " + e.getMessage());
+            }
         }
     }
 }
