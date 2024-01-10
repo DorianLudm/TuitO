@@ -29,7 +29,7 @@ public class Client{
         boolean isConnected = false;
         while(!isConnected){
             try{
-                
+                //TODO -> Créer un compte/S'identifier
             }
             catch(FalseLoginException e){}
         }
