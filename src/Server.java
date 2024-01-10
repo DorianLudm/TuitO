@@ -19,9 +19,13 @@ public class Server{
 
     //Envoie du message à tout les utilisateurs connectés sauf le client précisé en paramètre
     public void broadcastFollower(Message msg){
-        for(ClientHandler liaisonClient : this.clients){
-            if(liaisonClient.getClient() != client){
-                liaisonClient.broadcast(msg);
+        msg.uploadBD(); //Not implemented yet
+        Utilisateur sender = msg.getSender().getUser();
+        for(Utilisateur follower : sender.getFollowers()){
+            for(ClientHandler liaisonClient : this.clients){
+                if(liaisonClient.getClient().getUser().equals(follower)){
+                    liaisonClient.broadcast(msg.toString());
+                }
             }
         }
     }
@@ -43,7 +47,7 @@ public class Server{
                 // Création d'un ClientHandler pour chaque nouvelle connexion
                 Socket socketClient = socketServeur.accept();
                 String addrClient = socketClient.getRemoteSocketAddress().toString();
-                ClientHandler client = new ClientHandler(new Client(addrClient), socketClient, server);
+                ClientHandler client = new ClientHandler(new Client(), socketClient, server);
                 server.clients.add(client);
                 client.start();
     

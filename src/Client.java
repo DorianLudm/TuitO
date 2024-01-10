@@ -1,35 +1,25 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Client{
     private Utilisateur user;
-    private List<Message> messages;
 
-    public Client(){
-        this.messages = new ArrayList<Message>();
-    }
+    public Client(){}
 
     public Client(Utilisateur user){
         this.user = user;
-        this.messages = new ArrayList<Message>();
     }
 
     public void setUser(Utilisateur user){
         this.user = user;
     }
 
-    public String getPseudo(){
-        return this.user.getPseudo();
+    public Utilisateur getUser(){
+        return this.user;
     }
 
-    public List<Message> getMessages(){
-        return this.messages;
-    }
-
-    public static void main(String[] args) {
+    public void main(String[] args) {
         Socket socketClient = null;
         PrintWriter writer = null;
         Scanner scanner = new Scanner(System.in);
@@ -71,7 +61,7 @@ public class Client{
                     break;
                 }
 
-                Message message = new Message(input, client);
+                Message message = new Message(input, this);
                 System.out.print("\033[1A"); // Move up
                 System.out.print("\033[2K"); // Erase line content
                 writer.println(message.toString());
@@ -85,7 +75,6 @@ public class Client{
                 if (writer != null) writer.close();
                 if (socketClient != null) socketClient.close();
                 if (scanner != null) scanner.close();
-                if (scannerPseudo != null) scannerPseudo.close();
             } catch (IOException e) {
                 System.out.println("Error closing resources: " + e.getMessage());
             }

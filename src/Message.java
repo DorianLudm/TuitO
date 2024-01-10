@@ -23,8 +23,12 @@ public class Message {
         return this.message;
     }
 
+    public Client getSender(){
+        return this.sender;
+    }
+
     public String getPseudoClient(){
-        return this.sender.getPseudo();
+        return this.sender.getUser().getPseudo();
     }
 
     public void incrLikes(){
@@ -38,5 +42,9 @@ public class Message {
     @Override
     public String toString() {
         return this.getPseudoClient() + ": " + this.getMessage();
+    }
+
+    public void uploadBD(){
+        // TODO -> Upload le message dans la BD et renvoie une exception si ça a échoué
     }
 }
