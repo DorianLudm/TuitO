@@ -1,11 +1,14 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Message {
     private String dateEnvoi;
     private String message;
     private Client sender;
-    private int nbLikes = 0;
+    private List<Utilisateur> likes;
+    private int nbLikes;
 
     public Message(String message, Client autheur){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm:ss");
@@ -13,6 +16,8 @@ public class Message {
         this.dateEnvoi = dtf.format(localDate);
         this.message = message;
         this.sender = autheur;
+        this.likes = new ArrayList<Utilisateur>();
+        this.nbLikes = 0;
     }
 
     public String getDate(){
