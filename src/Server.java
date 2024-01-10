@@ -18,7 +18,7 @@ public class Server{
     }
 
     //Envoie du message à tout les utilisateurs connectés sauf le client précisé en paramètre
-    public void broadcast(String msg, Client client){
+    public void broadcastFollower(Message msg){
         for(ClientHandler liaisonClient : this.clients){
             if(liaisonClient.getClient() != client){
                 liaisonClient.broadcast(msg);

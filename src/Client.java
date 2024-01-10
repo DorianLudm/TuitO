@@ -5,16 +5,24 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Client{
-    private String pseudo;
+    private Utilisateur user;
     private List<Message> messages;
 
-    public Client(String pseudo){
-        this.pseudo = pseudo;
+    public Client(){
         this.messages = new ArrayList<Message>();
     }
 
+    public Client(Utilisateur user){
+        this.user = user;
+        this.messages = new ArrayList<Message>();
+    }
+
+    public void setUser(Utilisateur user){
+        this.user = user;
+    }
+
     public String getPseudo(){
-        return this.pseudo;
+        return this.user.getPseudo();
     }
 
     public List<Message> getMessages(){
@@ -22,15 +30,20 @@ public class Client{
     }
 
     public static void main(String[] args) {
-        Scanner scannerPseudo = new Scanner(System.in);
-        System.out.print("Entrez votre pseudo: ");
-        String pseudo = scannerPseudo.nextLine();
-        Client client = new Client(pseudo);
-
         Socket socketClient = null;
         PrintWriter writer = null;
         Scanner scanner = new Scanner(System.in);
         final BufferedReader[] readerContainer = new BufferedReader[1];
+
+        // SYSTEME DE CONNEXION (A changer + lié BD etc)
+        boolean isConnected = false;
+        while(!isConnected){
+            try{
+                
+            }
+            catch(FalseLoginException e){}
+        }
+        //
     
         try {
             socketClient = new Socket("localhost", 8080);

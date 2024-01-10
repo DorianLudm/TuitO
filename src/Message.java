@@ -5,6 +5,7 @@ public class Message {
     private String dateEnvoi;
     private String message;
     private Client sender;
+    private int nbLikes = 0;
 
     public Message(String message, Client autheur){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm:ss");
@@ -24,6 +25,14 @@ public class Message {
 
     public String getPseudoClient(){
         return this.sender.getPseudo();
+    }
+
+    public void incrLikes(){
+        this.nbLikes += 1;
+    }
+
+    public void decrLikes(){
+        this.nbLikes -= 1;
     }
 
     @Override
