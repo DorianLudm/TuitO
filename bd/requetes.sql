@@ -1,1 +1,1 @@
-select count(*) FROM LIKES
+select count(*) FROM LIKES;
