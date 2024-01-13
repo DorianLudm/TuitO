@@ -53,16 +53,6 @@ public class Server{
             e.printStackTrace();
         }
 
-        //Test to remove later
-        try{
-            Utilisateur user = dbm.loginAccount("Pixa", "Pixa253lulu");
-            System.out.println(user.toString());
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        
-
         //Server
         if(dbm != null){
             try {
