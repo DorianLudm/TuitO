@@ -1,0 +1,10 @@
+{
+    "java.project.sourcePaths": [
+        "mariadb-11.4.0-preview-linux-systemd-x86_64",
+        "src"
+    ],
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "mariadb-java-client-3.3.2.jar"
+    ]
+}

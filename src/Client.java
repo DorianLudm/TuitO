@@ -1,36 +1,39 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Client{
-    private String pseudo;
-    private List<Message> messages;
+    private Utilisateur user;
 
-    public Client(String pseudo){
-        this.pseudo = pseudo;
-        this.messages = new ArrayList<Message>();
+    public Client(){}
+
+    public Client(Utilisateur user){
+        this.user = user;
     }
 
-    public String getPseudo(){
-        return this.pseudo;
+    public void setUser(Utilisateur user){
+        this.user = user;
     }
 
-    public List<Message> getMessages(){
-        return this.messages;
+    public Utilisateur getUser(){
+        return this.user;
     }
 
-    public static void main(String[] args) {
-        Scanner scannerPseudo = new Scanner(System.in);
-        System.out.print("Entrez votre pseudo: ");
-        String pseudo = scannerPseudo.nextLine();
-        Client client = new Client(pseudo);
-
+    public void main(String[] args) {
         Socket socketClient = null;
         PrintWriter writer = null;
         Scanner scanner = new Scanner(System.in);
         final BufferedReader[] readerContainer = new BufferedReader[1];
+
+        // SYSTEME DE CONNEXION (A changer + lié BD etc)
+        boolean isConnected = false;
+        while(!isConnected){
+            try{
+                //TODO -> Créer un compte/S'identifier
+            }
+            catch(FalseLoginException e){}
+        }
+        //
     
         try {
             socketClient = new Socket("localhost", 8080);
@@ -58,7 +61,7 @@ public class Client{
                     break;
                 }
 
-                Message message = new Message(input, client);
+                Message message = new Message(input, this);
                 System.out.print("\033[1A"); // Move up
                 System.out.print("\033[2K"); // Erase line content
                 writer.println(message.toString());
@@ -72,7 +75,6 @@ public class Client{
                 if (writer != null) writer.close();
                 if (socketClient != null) socketClient.close();
                 if (scanner != null) scanner.close();
-                if (scannerPseudo != null) scannerPseudo.close();
             } catch (IOException e) {
                 System.out.println("Error closing resources: " + e.getMessage());
             }

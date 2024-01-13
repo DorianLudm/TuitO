@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
 import java.net.*;
+import java.sql.SQLException;
 
 public class Server{
     private List<ClientHandler> clients;
@@ -18,10 +19,14 @@ public class Server{
     }
 
     //Envoie du message à tout les utilisateurs connectés sauf le client précisé en paramètre
-    public void broadcast(String msg, Client client){
-        for(ClientHandler liaisonClient : this.clients){
-            if(liaisonClient.getClient() != client){
-                liaisonClient.broadcast(msg);
+    public void broadcastFollower(Message msg){
+        msg.uploadBD(); //Not implemented yet
+        Utilisateur sender = msg.getSender().getUser();
+        for(Utilisateur follower : sender.getFollowers()){
+            for(ClientHandler liaisonClient : this.clients){
+                if(liaisonClient.getClient().getUser().equals(follower)){
+                    liaisonClient.broadcast(msg.toString());
+                }
             }
         }
     }
@@ -35,28 +40,43 @@ public class Server{
         int port = 8080;
         Server server = new Server();
         ServerSocket socketServeur = null;
-    
-        try {
+        ConnexionBD connexionBD = null;
+        DatabaseManager dbm = null;
+
+        //Connection to DB
+        try{
+            connexionBD = new ConnexionBD();
+            connexionBD.connecter();
+            dbm = new DatabaseManager(connexionBD);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        //Server
+        if(dbm != null){
+            try {
             socketServeur = new ServerSocket(port);
     
             while (true) {
                 // Création d'un ClientHandler pour chaque nouvelle connexion
                 Socket socketClient = socketServeur.accept();
                 String addrClient = socketClient.getRemoteSocketAddress().toString();
-                ClientHandler client = new ClientHandler(new Client(addrClient), socketClient, server);
+                ClientHandler client = new ClientHandler(new Client(), socketClient, server);
                 server.clients.add(client);
                 client.start();
     
                 // Envoie d'un message de bienvenue à tout les utilisateurs connectés
                 server.broadcast("Nouvelle connexion de " + addrClient);
             }
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-            try {
-                if (socketServeur != null) socketServeur.close();
             } catch (IOException e) {
-                System.out.println("Error closing server socket: " + e.getMessage());
+                System.out.println("Error: " + e.getMessage());
+            } finally {
+                try {
+                    if (socketServeur != null) socketServeur.close();
+                } catch (IOException e) {
+                    System.out.println("Error closing server socket: " + e.getMessage());
+                }
             }
         }
     }
