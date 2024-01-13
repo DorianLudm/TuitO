@@ -1,7 +1,7 @@
 create table IF NOT EXISTS UTILISATEUR(
     idUtilisateur INTEGER PRIMARY KEY,
     pseudo VARCHAR(255),
-    mdp VARCHAR(255)
+    password VARCHAR(255)
 );
 
 create table IF NOT EXISTS MESSAGES(
