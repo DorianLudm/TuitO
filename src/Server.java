@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
 import java.net.*;
+import java.sql.SQLException;
 
 public class Server{
     private List<ClientHandler> clients;
@@ -39,8 +40,32 @@ public class Server{
         int port = 8080;
         Server server = new Server();
         ServerSocket socketServeur = null;
-    
-        try {
+        ConnexionBD connexionBD = null;
+        DatabaseManager dbm = null;
+
+        //Connection to DB
+        try{
+            connexionBD = new ConnexionBD();
+            connexionBD.connecter();
+            dbm = new DatabaseManager(connexionBD);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        //Test to remove later
+        try{
+            Utilisateur user = dbm.loginAccount("Pixa", "Pixa253lulu");
+            System.out.println(user.toString());
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        
+
+        //Server
+        if(dbm != null){
+            try {
             socketServeur = new ServerSocket(port);
     
             while (true) {
@@ -54,13 +79,14 @@ public class Server{
                 // Envoie d'un message de bienvenue à tout les utilisateurs connectés
                 server.broadcast("Nouvelle connexion de " + addrClient);
             }
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
-        } finally {
-            try {
-                if (socketServeur != null) socketServeur.close();
             } catch (IOException e) {
-                System.out.println("Error closing server socket: " + e.getMessage());
+                System.out.println("Error: " + e.getMessage());
+            } finally {
+                try {
+                    if (socketServeur != null) socketServeur.close();
+                } catch (IOException e) {
+                    System.out.println("Error closing server socket: " + e.getMessage());
+                }
             }
         }
     }

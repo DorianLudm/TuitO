@@ -2,16 +2,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Utilisateur {
+    private int id;
     private String pseudo;
     List<Message> messages;
     List<Utilisateur> followers;
     List<Utilisateur> following;
 
-    public Utilisateur(String pseudo){
-        this.pseudo = pseudo;
+    public Utilisateur(){
         this.messages = new ArrayList<Message>();
+        this.followers = new ArrayList<Utilisateur>();
+        this.following = new ArrayList<Utilisateur>();
     }
 
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public int getId(){
+        return this.id;
+    }
+
+    public void setPseudo(String pseudo){
+        this.pseudo = pseudo;
+    }
+    
     public String getPseudo(){
         return this.pseudo;
     }
@@ -38,5 +52,10 @@ public class Utilisateur {
 
     public void addFollowing(Utilisateur following){
         this.following.add(following);
+    }
+
+    @Override
+    public String toString(){
+        return this.pseudo;
     }
 }
