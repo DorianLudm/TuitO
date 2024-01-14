@@ -44,20 +44,22 @@ public class ClientHandler extends Thread{
                 try {
                     Utilisateur user = this.server.login(command[1], command[2]);
                     this.client.setUser(user);
-                    this.broadcast("True&" + user.getPseudo());
+                    this.broadcast("True&" + user.getPseudo() + "&" + user.getId());
                 } catch (FalseLoginException e) {
                     this.broadcast("False");
                 }
                 break;
-            // case "/REGISTER":
-            //     try{
-            //         this.client.register(command[1], command[2]);
-            //         this.broadcast("Vous êtes connecté en tant que " + this.client.getUser().getUsername());
-            //     }
-            //     catch(Exception e){
-            //         this.broadcast("Erreur lors de l'inscription, veuillez réessayer.");
-            //     }
-            //     break;
+            case "/REGISTER":
+                try{
+                    Integer idUser = this.server.register(command[1], command[2]);
+                    Utilisateur user = this.server.loadUser(idUser);
+                    this.client.setUser(user);
+                    this.broadcast("True&" + user.getPseudo() + "&" + user.getId());
+                }
+                catch(Exception e){
+                    this.broadcast("False");
+                }
+                break;
             // case "/FOLLOW":
             //     try{
             //         this.client.follow(command[1]);

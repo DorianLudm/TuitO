@@ -12,7 +12,7 @@ public class DatabaseManager {
         this.connexionBD = connexion;
     }
 
-    public void createAccount(String username, String password) throws SQLException{
+    public Integer createAccount(String username, String password) throws SQLException{
         String hashedPassword = hash(password);
         int newId = newIdUser();
         this.st = this.connexionBD.createStatement();
@@ -21,6 +21,7 @@ public class DatabaseManager {
         s.setString(2, username);
         s.setString(3, hashedPassword);
         s.executeUpdate();
+        return newId;
     }
 
     public int newIdUser() throws SQLException{
@@ -46,6 +47,22 @@ public class DatabaseManager {
         }
         else{
             throw new FalseLoginException();
+        }
+    }
+
+    public Utilisateur loadUser(Integer idUser) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        ResultSet rs = this.st.executeQuery("select * from UTILISATEUR where idUtilisateur='"+ idUser +"'");
+        if(rs.next()){
+            String pseudo = rs.getString(2);
+            Utilisateur user = new Utilisateur();
+            user.setId(idUser);
+            user.setPseudo(pseudo);
+            //TODO : load messages, likes, etc...
+            return user;
+        }
+        else{
+            throw new SQLException();
         }
     }
 

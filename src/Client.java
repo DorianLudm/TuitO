@@ -31,42 +31,97 @@ public class Client{
             // SYSTEME DE CONNEXION
             boolean isConnected = false;
             while(!isConnected){
-                try{
-                    // Envoie des identifiants au serveur
-                    writer = new PrintWriter(socketClient.getOutputStream(), true);
-                    System.out.println("\n--- Connexion ---");
-                    System.out.print("Identifiant : ");
-                    String username = scanner.nextLine();
-                    System.out.print("Mot de passe : ");
-                    String password = scanner.nextLine();
-                    writer.println("/LOGIN&" + username + "&" + password);
-                    
-                    // Réception de la réponse du serveur
-                    String line = reader.readLine();
-                    String[] response = line.split("&");
-                    if ("True".equals(response[0])) {
-                        isConnected = true;
-                        System.out.println("\n--- Connexion réussie ---");
-                        System.out.println("Vous êtes connecté en tant que " + response[1] + ".");
-                    } 
-                    else {
-                        System.out.println("\n--- Erreur de connexion ---");
-                        if ("False".equals(response[0])) {
-                            System.out.println("Identifiant ou mot de passe incorrect. Veuillez réessayer.");
+                System.out.println("\n--- Connexion au serveur ---");
+                System.out.println("Souhaitez vous vous connecter ou vous inscrire ?");
+                System.out.println("1. Connexion");
+                System.out.println("2. Inscription");
+                System.out.println("3. Quitter");
+
+                String choice = scanner.nextLine();
+                switch(choice){
+                    case "1":
+                        try{
+                            // Envoie des identifiants au serveur
+                            writer = new PrintWriter(socketClient.getOutputStream(), true);
+                            System.out.println("\n--- Connexion ---");
+                            System.out.print("Identifiant : ");
+                            String username = scanner.nextLine();
+                            System.out.print("Mot de passe : ");
+                            String password = scanner.nextLine();
+                            writer.println("/LOGIN&" + username + "&" + password);
+                            
+                            // Réception de la réponse du serveur
+                            String line = reader.readLine();
+                            String[] response = line.split("&");
+                            if ("True".equals(response[0])) {
+                                isConnected = true;
+                                System.out.println("\n--- Connexion réussie ---");
+                                System.out.println("Vous êtes connecté en tant que " + response[1] + ".");
+                                client.user = new Utilisateur();
+                                client.user.setPseudo(response[1]);
+                                client.user.setId(Integer.parseInt(response[2]));
+                            } 
+                            else {
+                                System.out.println("\n--- Erreur de connexion ---");
+                                if ("False".equals(response[0])) {
+                                    System.out.println("Identifiant ou mot de passe incorrect. Veuillez réessayer.");
+                                }
+                                else{
+                                    System.out.println("Un problème est survenu lors de la connexion au serveur.");
+                                    System.out.println(Arrays.toString(response));
+                                }
+                            }
                         }
-                        else{
+                        catch(Exception e){
+                            System.out.println("\n--- Erreur de connexion ---");
+                            System.out.println("Erreur lors de la connexion au serveur.");
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "2":
+                        try{
+                            // Envoie des identifiants au serveur
+                            writer = new PrintWriter(socketClient.getOutputStream(), true);
+                            System.out.println("\n--- Inscription ---");
+                            System.out.print("Identifiant : ");
+                            String username = scanner.nextLine();
+                            System.out.print("Mot de passe : ");
+                            String password = scanner.nextLine();
+                            writer.println("/REGISTER&" + username + "&" + password);
+                            
+                            // Réception de la réponse du serveur
+                            String line = reader.readLine();
+                            String[] response = line.split("&");
+                            if ("True".equals(response[0])) {
+                                isConnected = true;
+                                System.out.println("\n--- Inscription réussie ---");
+                                System.out.println("Vous êtes connecté en tant que " + response[1] + ".");
+                                client.user = new Utilisateur();
+                                client.user.setPseudo(response[1]);
+                                client.user.setId(Integer.parseInt(response[2]));
+                            } 
+                            else {
+                                System.out.println("\n--- Erreur d'inscription ---");
+                                System.out.println("Un problème est survenu lors de la connexion au serveur.");
+                            }
+                        }
+                        catch(Exception e){
+                            System.out.println("\n--- Erreur d'inscription ---");
                             System.out.println("Un problème est survenu lors de la connexion au serveur.");
-                            System.out.println(Arrays.toString(response));
+                            e.printStackTrace();
                         }
-                    }
-                }
-                catch(Exception e){
-                    System.out.println("\n--- Erreur de connexion ---");
-                    System.out.println("Erreur lors de la connexion au serveur.");
-                    e.printStackTrace();
+                        break;
+                    case "3":
+                        System.out.println("Au revoir !");
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Veuillez entrer un choix valide.");
+                        break;
                 }
             }
-        
+            
+            //
             try {
                 // Créer un thread secondaire pour lire les messages du serveur
                 new Thread(() -> {

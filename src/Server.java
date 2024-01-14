@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
 import java.net.*;
+import java.sql.SQLException;
 
 public class Server{
     private List<ClientHandler> clients;
@@ -47,6 +48,32 @@ public class Server{
         }
         catch(FalseLoginException e){
             throw new FalseLoginException();
+        }
+        catch(Exception e){
+            System.out.println("Erreur lors de la connexion au serveur.");
+            return null;
+        }
+    }
+
+    public Integer register(String username, String password) throws SQLException {
+        try{
+            return this.dbm.createAccount(username, password);
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            System.out.println("Erreur lors de la connexion au serveur.");
+            return null;
+        }
+    }
+
+    public Utilisateur loadUser(Integer idUser) throws SQLException {
+        try{
+            return this.dbm.loadUser(idUser);
+        }
+        catch(SQLException e){
+            throw new SQLException();
         }
         catch(Exception e){
             System.out.println("Erreur lors de la connexion au serveur.");
