@@ -101,8 +101,14 @@ public class Client{
                                 client.user.setId(Integer.parseInt(response[2]));
                             } 
                             else {
-                                System.out.println("\n--- Erreur d'inscription ---");
-                                System.out.println("Un problème est survenu lors de la connexion au serveur.");
+                                if("Duplicate".equals(response[0])){
+                                    System.out.println("\n--- Erreur d'inscription ---");
+                                    System.out.println("Ce pseudo est déjà utilisé. Veuillez en choisir un autre.");
+                                }
+                                else{
+                                    System.out.println("\n--- Erreur d'inscription ---");
+                                    System.out.println("Un problème est survenu lors de la connexion au serveur.");
+                                }
                             }
                         }
                         catch(Exception e){

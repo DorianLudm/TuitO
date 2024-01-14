@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class ClientHandler extends Thread{
     private Client client;
@@ -55,6 +56,9 @@ public class ClientHandler extends Thread{
                     Utilisateur user = this.server.loadUser(idUser);
                     this.client.setUser(user);
                     this.broadcast("True&" + user.getPseudo() + "&" + user.getId());
+                }
+                catch(SQLException e){
+                    this.broadcast("Duplicate");
                 }
                 catch(Exception e){
                     this.broadcast("False");
