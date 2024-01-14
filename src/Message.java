@@ -6,11 +6,11 @@ import java.util.List;
 public class Message {
     private String dateEnvoi;
     private String message;
-    private Client sender;
+    private Utilisateur sender;
     private List<Utilisateur> likes;
     private int nbLikes;
 
-    public Message(String message, Client autheur){
+    public Message(String message, Utilisateur autheur){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm:ss");
         LocalDate localDate = LocalDate.now();
         this.dateEnvoi = dtf.format(localDate);
@@ -28,12 +28,12 @@ public class Message {
         return this.message;
     }
 
-    public Client getSender(){
+    public Utilisateur getSender(){
         return this.sender;
     }
 
     public String getPseudoClient(){
-        return this.sender.getUser().getPseudo();
+        return this.sender.getPseudo();
     }
 
     public void incrLikes(){
@@ -47,9 +47,5 @@ public class Message {
     @Override
     public String toString() {
         return this.getPseudoClient() + ": " + this.getMessage();
-    }
-
-    public void uploadBD(){
-        // TODO -> Upload le message dans la BD et renvoie une exception si ça a échoué
     }
 }
