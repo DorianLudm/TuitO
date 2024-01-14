@@ -1,6 +1,6 @@
 create table IF NOT EXISTS UTILISATEUR(
     idUtilisateur INTEGER PRIMARY KEY,
-    pseudo VARCHAR(255),
+    pseudo VARCHAR(255) UNIQUE,
     password VARCHAR(255)
 );
 
