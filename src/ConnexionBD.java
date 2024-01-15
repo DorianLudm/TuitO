@@ -9,7 +9,8 @@ public class ConnexionBD {
 	}
 
 	public void connecter() throws SQLException {
-		this.mysql = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Dorian", "dorian", "ludmann");
+		this.mysql = DriverManager.getConnection("jdbc:mysql://servinfo-mariadb:3306/DBludmann", "ludmann", "ludmann"); //BD IUT
+		// this.mysql = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Dorian", "dorian", "ludmann"); //BD locale
 		this.connecte=this.mysql!=null;
     }
 	
