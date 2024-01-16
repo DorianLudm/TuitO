@@ -5,18 +5,18 @@ import java.net.Socket;
 import java.sql.SQLException;
 
 public class ClientHandler extends Thread{
-    private Client client;
+    private Utilisateur user;
     private Socket socketClient;
     private Server server;
 
-    public ClientHandler(Client client, Socket socketClient, Server server){
-        this.client = client;
+    public ClientHandler(Utilisateur user, Socket socketClient, Server server){
+        this.user = user;
         this.socketClient = socketClient;
         this.server = server;
     }
 
-    public Client getClient(){
-        return this.client;
+    public Utilisateur getUser(){
+        return this.user;
     }
 
     // Envoie du message au client associé à l'instance de ClientHandler
@@ -39,13 +39,14 @@ public class ClientHandler extends Thread{
     }
 
     public void handleCommand(String line){
+        this.server.recu(line); //TO SUPPR
         String[] command = line.split("&");
-        switch(command[0]){
+        switch(command[0].toUpperCase()){ //TODO vérif que le uppercase fonctionne
             case "/LOGIN":
                 try {
                     Utilisateur user = this.server.login(command[1], command[2]);
-                    this.client.setUser(user);
-                    this.broadcast("True&" + user.getPseudo() + "&" + user.getId());
+                    this.user = user;
+                    this.broadcast("True&" + this.user.getPseudo() + "&" + this.user.getId());
                 } catch (FalseLoginException e) {
                     this.broadcast("False");
                 }
@@ -54,8 +55,8 @@ public class ClientHandler extends Thread{
                 try{
                     Integer idUser = this.server.register(command[1], command[2]);
                     Utilisateur user = this.server.loadUser(idUser);
-                    this.client.setUser(user);
-                    this.broadcast("True&" + user.getPseudo() + "&" + user.getId());
+                    this.user = user;
+                    this.broadcast("True&" + this.user.getPseudo() + "&" + this.user.getId());
                 }
                 catch(SQLException e){
                     this.broadcast("Duplicate");
@@ -64,15 +65,18 @@ public class ClientHandler extends Thread{
                     this.broadcast("False");
                 }
                 break;
-            // case "/FOLLOW":
-            //     try{
-            //         this.client.follow(command[1]);
-            //         this.broadcast("Vous suivez désormais " + command[1]);
-            //     }
-            //     catch(Exception e){
-            //         this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
-            //     }
-            //     break;
+            case "/FOLLOW":
+                try{
+                    Utilisateur utilisateurFollowed = this.server.follow(this.user.getId(), Integer.parseInt(command[1]));
+                    this.broadcast("Vous suivez désormais " + utilisateurFollowed.getPseudo() + "(" + command[1] + ")" + ".");
+                }
+                catch(SQLException e){
+                    this.broadcast("");
+                }
+                catch(Exception e){
+                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
+                }
+                break;
             // case "/UNFOLLOW":
             //     try{
             //         this.client.unfollow(command[1]);
@@ -126,7 +130,7 @@ public class ClientHandler extends Thread{
                     this.handleCommand(line);
                 }
                 else{
-                    Message message = new Message(line, this.client.getUser());
+                    Message message = new Message(line, this.user);
                     this.server.broadcastFollower(message);
                 }
             }

@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,8 @@ public class Message {
 
     public Message(String message, Utilisateur autheur){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm:ss");
-        LocalDate localDate = LocalDate.now();
-        this.dateEnvoi = dtf.format(localDate);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        this.dateEnvoi = dtf.format(localDateTime);
         this.message = message;
         this.sender = autheur;
         this.likes = new ArrayList<Utilisateur>();

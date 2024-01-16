@@ -15,6 +15,10 @@ public class Server{
         this.dbm = null;
     }
 
+    public void recu(String msg){ //TO SUPPR
+        System.out.println(msg);
+    }
+
     //Envoie du message à tout les utilisateurs connectés
     public void broadcast(String msg){
         for(ClientHandler liaisonClient : this.clients){
@@ -26,14 +30,14 @@ public class Server{
     public void broadcastFollower(Message msg){
         // TODO -> Ajouter le message à la base de données et renvoyer le message aux clients concernés
         //this.dbm.addMessage(msg);
-        Utilisateur sender = msg.getSender();
-        for(Utilisateur follower : sender.getFollowers()){
-            for(ClientHandler liaisonClient : this.clients){
-                if(liaisonClient.getClient().getUser().equals(follower)){
-                    liaisonClient.broadcast(msg.toString());
-                }
-            }
-        }
+        // Utilisateur sender = msg.getSender();
+        // for(Utilisateur follower : this.dbm.getFollowers(sender.getId())){
+        //     for(ClientHandler liaisonClient : this.clients){
+        //         if(liaisonClient.getUser().equals(follower)){
+        //             liaisonClient.broadcast(msg.toString());
+        //         }
+        //     }
+        // }
     }
 
     //Fermeture de la connexion avec le client
@@ -81,6 +85,20 @@ public class Server{
         }
     }
 
+    public Utilisateur follow(Integer idUser, Integer idUserToFollow) throws SQLException{
+        try{
+            Utilisateur userFollowed = this.dbm.follow(idUser, idUserToFollow);
+            return userFollowed;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            System.out.println("Erreur lors de la connexion au serveur.");
+            return null;
+        }
+    }
+
     public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();
@@ -104,7 +122,7 @@ public class Server{
                 while (true) {
                     // Création d'un ClientHandler pour chaque nouvelle connexion
                     Socket socketClient = socketServeur.accept();
-                    ClientHandler client = new ClientHandler(new Client(), socketClient, server);
+                    ClientHandler client = new ClientHandler(new Utilisateur(), socketClient, server);
                     server.clients.add(client);
                     client.start();
                 }

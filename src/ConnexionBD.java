@@ -9,8 +9,8 @@ public class ConnexionBD {
 	}
 
 	public void connecter() throws SQLException {
-		this.mysql = DriverManager.getConnection("jdbc:mysql://servinfo-maria:3306/DBludmann", "ludmann", "ludmann"); //IUT
-		//this.mysql = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Dorian", "dorian", "ludmann"); //Local PC
+		//this.mysql = DriverManager.getConnection("jdbc:mysql://servinfo-maria:3306/DBludmann", "ludmann", "ludmann"); //IUT
+		this.mysql = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Dorian", "dorian", "ludmann"); //Local PC
 		this.connecte=this.mysql!=null;
     }
 	

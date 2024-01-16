@@ -150,9 +150,19 @@ public class Client{
                         break;
                     }
 
-                    Message message = new Message(input, client.user);
-                    writer.println(message.toString());
-                    System.out.println("You sent: " + message.getMessage());
+                    if(input.startsWith("/")){
+                        String[] command = input.split(" ");
+                        String commandToSend = "";
+                        for (String string : command) {
+                            commandToSend += string + "&";
+                        }
+                        writer.println(commandToSend);
+                    }
+                    else{
+                        Message message = new Message(input, client.user);
+                        writer.println(message.toString());
+                        System.out.println("You sent: " + message.getMessage());
+                    }
                 }
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());

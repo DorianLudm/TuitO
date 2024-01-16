@@ -66,6 +66,34 @@ public class DatabaseManager {
         }
     }
 
+    public Utilisateur follow(Integer idUser, Integer idUserToFollow) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            String pseudoFollowed = getPseudo(idUserToFollow);
+            PreparedStatement s = this.connexionBD.prepareStatement("insert into FOLLOW values (?, ?)");
+            s.setInt(1, idUser);
+            s.setInt(2, idUserToFollow);
+            s.executeUpdate();
+            Utilisateur user = new Utilisateur(idUserToFollow, pseudoFollowed);
+            return user;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public String getPseudo(int idUser) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        ResultSet rs = this.st.executeQuery("select pseudo from UTILISATEUR where idUtilisateur='"+ idUser +"'");
+        if(rs.next()){
+            String pseudo = rs.getString(1);
+            return pseudo;
+        }
+        else{
+            throw new SQLException();
+        }
+    }
+
     public static String hash(final String base) {
         try{
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
