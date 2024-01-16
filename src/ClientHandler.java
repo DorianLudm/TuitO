@@ -41,7 +41,7 @@ public class ClientHandler extends Thread{
     public void handleCommand(String line){
         this.server.recu(line); //TO SUPPR
         String[] command = line.split("&");
-        switch(command[0].toUpperCase()){ //TODO vérif que le uppercase fonctionne
+        switch(command[0].toUpperCase()){
             case "/LOGIN":
                 try {
                     Utilisateur user = this.server.login(command[1], command[2]);
@@ -71,7 +71,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous suivez désormais " + utilisateurFollowed.getPseudo() + "(" + command[1] + ")" + ".");
                 }
                 catch(SQLException e){
-                    this.broadcast("");
+                    this.broadcast("Vous suivez déjà cet utilisateur, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
                     this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
