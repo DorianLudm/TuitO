@@ -1,4 +1,4 @@
-insert into UTILISATEUR(idUtilisateur, pseudo, mdp) values
+insert into UTILISATEUR(idUtilisateur, pseudo, password) values
     (1,'Dorian',123),
     (2,'Adèle',456),
     (3,'Tom',789);
