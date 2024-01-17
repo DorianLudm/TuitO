@@ -3,6 +3,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.SQLException;
+import com.google.gson.Gson;
 
 public class ClientHandler extends Thread{
     private Utilisateur user;
@@ -120,6 +121,12 @@ public class ClientHandler extends Thread{
         }
     }
 
+    public void handleMessage(String line){
+        Gson gson = new Gson();
+        Message message = gson.fromJson(line, Message.class);
+        this.server.broadcastFollower(message);
+    }
+
     @Override
     public void run(){
         try {
@@ -130,8 +137,7 @@ public class ClientHandler extends Thread{
                     this.handleCommand(line);
                 }
                 else{
-                    Message message = new Message(line, this.user);
-                    this.server.broadcastFollower(message);
+                    this.handleMessage(line);
                 }
             }
         } catch (Exception e) {

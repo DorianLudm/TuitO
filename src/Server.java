@@ -26,18 +26,26 @@ public class Server{
         }
     }
 
-    //Envoie du message à tout les utilisateurs connectés sauf le client précisé en paramètre
+    //Sauvegarde du message dans la base de données et envoie du message aux utilisateurs suivant l'utilisateur qui l'a envoyé
     public void broadcastFollower(Message msg){
-        // TODO -> Ajouter le message à la base de données et renvoyer le message aux clients concernés
-        //this.dbm.addMessage(msg);
-        // Utilisateur sender = msg.getSender();
-        // for(Utilisateur follower : this.dbm.getFollowers(sender.getId())){
-        //     for(ClientHandler liaisonClient : this.clients){
-        //         if(liaisonClient.getUser().equals(follower)){
-        //             liaisonClient.broadcast(msg.toString());
-        //         }
-        //     }
-        // }
+        if(msg == null || msg.getMessage().trim().isEmpty()){
+            return;
+        }
+        System.out.println(msg.toString());
+        try{
+            this.dbm.addMessage(msg);
+            int idSender = msg.getSender().getId();
+            List<Integer> followers = this.dbm.getFollowers(idSender);
+            for(ClientHandler liaisonClient : this.clients){
+                if(followers.contains(liaisonClient.getUser().getId())){
+                    liaisonClient.broadcast(msg.toString());
+                }
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            System.out.println("Erreur lors de la connexion au serveur.");
+        }
     }
 
     //Fermeture de la connexion avec le client

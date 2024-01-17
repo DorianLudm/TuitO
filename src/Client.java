@@ -3,6 +3,8 @@ import java.net.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
+
 public class Client{
     private Utilisateur user;
 
@@ -132,15 +134,17 @@ public class Client{
                 // Créer un thread secondaire pour lire les messages du serveur
                 new Thread(() -> {
                     try {
-                        String message;
-                        while ((message = reader.readLine()) != null) {
-                            System.out.println(message);
+                        Gson gson = new Gson();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            Message message = gson.fromJson(line, Message.class);
+                            System.out.println(message.formatMessage());
                         }
                     } catch (IOException e) {
                         System.out.println("Error reading from server: " + e.getMessage());
                     }
                 }).start();
-        
+
                 // Thread d'envoi de message vers le serveur
                 System.out.print("Enter a message to send (or 'quit' to exit): \n");
                 while (true) {
@@ -159,9 +163,11 @@ public class Client{
                         writer.println(commandToSend);
                     }
                     else{
-                        Message message = new Message(input, client.user);
-                        writer.println(message.toString());
-                        System.out.println("You sent: " + message.getMessage());
+                        if(!input.trim().equals("")){
+                            Message message = new Message(input, client.user);
+                            writer.println(message.toString());
+                            System.out.println("You sent: " + message.getMessage());
+                        }
                     }
                 }
             } catch (Exception e) {

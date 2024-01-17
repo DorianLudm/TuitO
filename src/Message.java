@@ -1,24 +1,19 @@
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+
+import com.google.gson.Gson;
 
 public class Message {
     private String dateEnvoi;
     private String message;
     private Utilisateur sender;
-    private List<Utilisateur> likes;
-    private int nbLikes;
 
-    public Message(String message, Utilisateur autheur){
+    public Message(String message, Utilisateur sender){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm:ss");
         LocalDateTime localDateTime = LocalDateTime.now();
         this.dateEnvoi = dtf.format(localDateTime);
         this.message = message;
-        this.sender = autheur;
-        this.likes = new ArrayList<Utilisateur>();
-        this.nbLikes = 0;
+        this.sender = sender;
     }
 
     public String getDate(){
@@ -33,20 +28,13 @@ public class Message {
         return this.sender;
     }
 
-    public String getPseudoClient(){
-        return this.sender.getPseudo();
-    }
-
-    public void incrLikes(){
-        this.nbLikes += 1;
-    }
-
-    public void decrLikes(){
-        this.nbLikes -= 1;
+    public String formatMessage(){
+        return this.sender.getPseudo() + " (" + this.dateEnvoi + ") : " + this.message;
     }
 
     @Override
     public String toString() {
-        return this.getPseudoClient() + ": " + this.getMessage();
+        Gson gson = new Gson();
+        return "{ \"dateEnvoi\": \"" + this.dateEnvoi + "\", \"message\": \"" + this.message + "\", \"sender\": " + gson.toJson(this.sender) + " }";
     }
 }

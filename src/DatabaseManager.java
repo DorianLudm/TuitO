@@ -1,8 +1,13 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.security.MessageDigest;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DatabaseManager {
     private ConnexionBD connexionBD;
@@ -31,7 +36,7 @@ public class DatabaseManager {
             int maxint = rs.getInt(1);
             return (maxint+1);
         }
-        throw new SQLException();
+        return 1;
     }
 
     public Utilisateur loginAccount(String username, String password) throws SQLException, FalseLoginException{
@@ -58,7 +63,6 @@ public class DatabaseManager {
             Utilisateur user = new Utilisateur();
             user.setId(idUser);
             user.setPseudo(pseudo);
-            //TODO : load messages, likes, etc...
             return user;
         }
         else{
@@ -90,6 +94,44 @@ public class DatabaseManager {
             return pseudo;
         }
         else{
+            throw new SQLException();
+        }
+    }
+
+    public void addMessage(Message message) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        PreparedStatement s = this.connexionBD.prepareStatement("insert into MESSAGES values (?, ?, ?, ?)");
+        s.setInt(1, newIdMessage());
+        s.setInt(2, message.getSender().getId());
+        s.setString(3, message.getMessage());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(message.getDate(), formatter);
+        s.setTimestamp(4, java.sql.Timestamp.valueOf(dateTime));
+        s.executeUpdate();
+    }
+
+    public int newIdMessage() throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        ResultSet rs = this.st.executeQuery("select max(idMessage) from MESSAGES;");
+        if (rs.next()){
+            int maxint = rs.getInt(1);
+            return (maxint+1);
+        }
+        return 1;
+    }
+
+    public List<Integer> getFollowers(int idSender) throws SQLException{
+        try{
+            this.st = this.connexionBD.createStatement();
+            ResultSet rs = this.st.executeQuery("select idUtilisateur1 from FOLLOW where idUtilisateur2='"+ idSender +"'");
+            List<Integer> followers = new ArrayList<>();
+            while(rs.next()){
+                int idFollower = rs.getInt(1);
+                followers.add(idFollower);
+            }
+            return followers;
+        }
+        catch(SQLException e){
             throw new SQLException();
         }
     }
