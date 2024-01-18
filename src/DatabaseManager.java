@@ -168,6 +168,32 @@ public class DatabaseManager {
         }
     }
 
+    public Integer like(Integer idUser, Integer idMessage) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            PreparedStatement s = this.connexionBD.prepareStatement("insert into LIKES values (?, ?)");
+            s.setInt(1, idUser);
+            s.setInt(2, idMessage);
+            s.executeUpdate();
+            return getNbLikes(idMessage);
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public Integer getNbLikes(Integer idMessage) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        ResultSet rs = this.st.executeQuery("select count(*) from LIKES where idMessage='"+ idMessage +"'");
+        if(rs.next()){
+            int nbLikes = rs.getInt(1);
+            return nbLikes;
+        }
+        else{
+            throw new SQLException();
+        }
+    }
+
     public static String hash(final String base) {
         try{
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");

@@ -79,39 +79,44 @@ public class ClientHandler extends Thread{
                 }
                 break;
             case "/UNFOLLOW":
-            try{
-                Utilisateur utilisateurUnfollowed = this.server.unfollow(this.user.getId(), command[1]);
-                this.broadcast("Vous ne suivez désormais plus l'utilisateur '" + utilisateurUnfollowed.getPseudo() + "'.");
-            }
-            catch(SQLException e){
-                this.broadcast("Vous ne suivez déjà pas cet utilisateur, ou alors il n'existe pas.");
-            }
-            catch(Exception e){
-                this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
-            }
-            break;
-            // case "/LIKE":
+                try{
+                    Utilisateur utilisateurUnfollowed = this.server.unfollow(this.user.getId(), command[1]);
+                    this.broadcast("Vous ne suivez désormais plus l'utilisateur '" + utilisateurUnfollowed.getPseudo() + "'.");
+                }
+                catch(SQLException e){
+                    this.broadcast("Vous ne suivez déjà pas cet utilisateur, ou alors il n'existe pas.");
+                }
+                catch(Exception e){
+                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
+                }
+                break;
+            case "/LIKE":
+                try{
+                    this.server.like(this.user.getId(), Integer.parseInt(command[1]));
+                    this.broadcast("Tweet liké.");
+                }
+                catch(Exception e){
+                    this.broadcast("Erreur lors du like du tweet, veuillez réessayer.");
+                }
+                break;
+            // case "/DISLIKE":
             //     try{
-            //         this.client.like(Integer.parseInt(command[1]));
-            //         this.broadcast("Tweet liké.");
+            //         this.server.dislike(this.user.getId(), Integer.parseInt(command[1]));
+            //         this.broadcast("Tweet disliké.");
             //     }
             //     catch(Exception e){
-            //         this.broadcast("Erreur lors du like du tweet, veuillez réessayer.");
+            //         this.broadcast("Erreur lors du dislike du tweet, veuillez réessayer.");
             //     }
             //     break;
-            // case "/RETWEET":
-            //     try{
-            //         this.client.retweet(Integer.parseInt(command[1]));
-            //         this.broadcast("Tweet retweeté.");
-            //     }
-            //     catch(Exception e){
-            //         this.broadcast("Erreur lors du retweet du tweet, veuillez réessayer.");
-            //     }
-            //     break;
-            // case "/COMMENT":
-            //     try{
-            //         this.client.comment(Integer.parseInt(command[1]), command[2]);
-            //         this.broadcast("Commentaire envoyé");
+            case "/NBLIKES":
+                try{
+                    Integer nbLikes = this.server.getNbLikes(Integer.parseInt(command[1]));
+                    this.broadcast("Le tweet a " + nbLikes + " likes.");
+                }
+                catch(Exception e){
+                    this.broadcast("Erreur lors de la récupération du nombre de likes du tweet, veuillez réessayer.");
+                }
+                break;
         }
     }
 

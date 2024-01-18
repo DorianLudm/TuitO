@@ -119,6 +119,32 @@ public class Server{
         }
     }
 
+    public Integer like(Integer idUser, Integer idMessage) throws SQLException, ServerIssueException{
+        try{
+            Integer newNombreLikes = this.dbm.like(idUser, idMessage);
+            return newNombreLikes;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public Integer getNbLikes(Integer idMessage) throws SQLException, ServerIssueException{
+        try{
+            Integer nombreLikes = this.dbm.getNbLikes(idMessage);
+            return nombreLikes;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
     public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();
