@@ -108,6 +108,8 @@ public class ClientHandler extends Thread{
             //         this.broadcast("Erreur lors du dislike du tweet, veuillez réessayer.");
             //     }
             //     break;
+            case "/GETLIKES":
+            case "/GETNBLIKES":
             case "/NBLIKES":
                 try{
                     Integer nbLikes = this.server.getNbLikes(Integer.parseInt(command[1]));
