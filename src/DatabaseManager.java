@@ -182,6 +182,23 @@ public class DatabaseManager {
         }
     }
 
+    public Integer unlike(Integer idUser, Integer idMessage) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            PreparedStatement s = this.connexionBD.prepareStatement("delete from LIKES where idUtilisateur=? and idMessage=?");
+            s.setInt(1, idUser);
+            s.setInt(2, idMessage);
+            int nbLigneSuppr = s.executeUpdate();
+            if(nbLigneSuppr == 0){
+                throw new SQLException();
+            }
+            return getNbLikes(idMessage);
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
     public Integer getNbLikes(Integer idMessage) throws SQLException{
         this.st = this.connexionBD.createStatement();
         ResultSet rs = this.st.executeQuery("select count(*) from LIKES where idMessage='"+ idMessage +"'");

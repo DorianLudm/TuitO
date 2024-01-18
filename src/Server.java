@@ -132,6 +132,19 @@ public class Server{
         }
     }
 
+    public Integer unlike(Integer idUser, Integer idMessage) throws SQLException, ServerIssueException{
+        try{
+            Integer newNombreLikes = this.dbm.unlike(idUser, idMessage);
+            return newNombreLikes;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
     public Integer getNbLikes(Integer idMessage) throws SQLException, ServerIssueException{
         try{
             Integer nombreLikes = this.dbm.getNbLikes(idMessage);

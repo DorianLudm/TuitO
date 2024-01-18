@@ -92,22 +92,22 @@ public class ClientHandler extends Thread{
                 break;
             case "/LIKE":
                 try{
-                    this.server.like(this.user.getId(), Integer.parseInt(command[1]));
-                    this.broadcast("Tweet liké.");
+                    int nbLikes = this.server.like(this.user.getId(), Integer.parseInt(command[1]));
+                    this.broadcast("Tuit liké. Il a désormais " + nbLikes + " likes.");
                 }
                 catch(Exception e){
-                    this.broadcast("Erreur lors du like du tweet, veuillez réessayer.");
+                    this.broadcast("Vous aimez déjà ce tuit, ou alors il n'existe pas.");
                 }
                 break;
-            // case "/DISLIKE":
-            //     try{
-            //         this.server.dislike(this.user.getId(), Integer.parseInt(command[1]));
-            //         this.broadcast("Tweet disliké.");
-            //     }
-            //     catch(Exception e){
-            //         this.broadcast("Erreur lors du dislike du tweet, veuillez réessayer.");
-            //     }
-            //     break;
+            case "/UNLIKE":
+                try{
+                    int nbLikes = this.server.unlike(this.user.getId(), Integer.parseInt(command[1]));
+                    this.broadcast("Vous n'aimez plus ce tuit. Il a désormais " + nbLikes + " likes.");
+                }
+                catch(Exception e){
+                    this.broadcast("Vous n'avez pas likez ce tuit, ou alors il n'existe pas.");
+                }
+                break;
             case "/GETLIKES":
             case "/GETNBLIKES":
             case "/NBLIKES":
