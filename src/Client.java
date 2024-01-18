@@ -155,10 +155,6 @@ public class Client{
                 while (true) {
                     String input = scanner.nextLine();
 
-                    if ("quit".equalsIgnoreCase(input)) {
-                        break;
-                    }
-
                     if(input.startsWith("/")){
                         String[] command = input.split(" ");
                         String commandToSend = "";

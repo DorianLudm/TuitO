@@ -95,8 +95,11 @@ public class ClientHandler extends Thread{
                     int nbLikes = this.server.like(this.user.getId(), Integer.parseInt(command[1]));
                     this.broadcast("Tuit liké. Il a désormais " + nbLikes + " likes.");
                 }
-                catch(Exception e){
+                catch(SQLException e){
                     this.broadcast("Vous aimez déjà ce tuit, ou alors il n'existe pas.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue avec le serveur.");
                 }
                 break;
             case "/UNLIKE":
@@ -104,8 +107,11 @@ public class ClientHandler extends Thread{
                     int nbLikes = this.server.unlike(this.user.getId(), Integer.parseInt(command[1]));
                     this.broadcast("Vous n'aimez plus ce tuit. Il a désormais " + nbLikes + " likes.");
                 }
-                catch(Exception e){
+                catch(SQLException e){
                     this.broadcast("Vous n'avez pas likez ce tuit, ou alors il n'existe pas.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue avec le serveur.");
                 }
                 break;
             case "/GETLIKES":
@@ -113,12 +119,27 @@ public class ClientHandler extends Thread{
             case "/NBLIKES":
                 try{
                     Integer nbLikes = this.server.getNbLikes(Integer.parseInt(command[1]));
-                    this.broadcast("Le tweet a " + nbLikes + " likes.");
+                    this.broadcast("Ce tuit a " + nbLikes + " likes.");
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors de la récupération du nombre de likes du tuit, veuillez réessayer.");
                 }
                 catch(Exception e){
-                    this.broadcast("Erreur lors de la récupération du nombre de likes du tweet, veuillez réessayer.");
+                    this.broadcast("Une erreur est survenue lors de la récupération du nombre de likes du tuit.");
                 }
                 break;
+            case "/DELETE":
+            case "/REMOVE":
+                try{
+                    this.server.deleteMsg(this.user.getId() ,Integer.parseInt(command[1]));
+                    this.broadcast("Le tuit (" + command[1] + ") a été supprimé.");
+                }
+                catch(SQLException e){
+                    this.broadcast("Vous n'êtes pas l'auteur de ce tuit, ou alors il n'existe pas.");
+                }
+                catch(Exception e){
+                    this.broadcast("Erreur lors de la suppression du tuit, veuillez réessayer.");
+                }
         }
     }
 

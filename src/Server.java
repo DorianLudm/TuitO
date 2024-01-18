@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
 import java.io.IOException;
 import java.net.*;
 import java.sql.SQLException;
@@ -158,6 +160,18 @@ public class Server{
         }
     }
 
+    public void deleteMsg(Integer idUser, Integer idMessage) throws SQLException, ServerIssueException{
+        try{
+            this.dbm.deleteMsg(idUser, idMessage);
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
     public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();
@@ -172,6 +186,38 @@ public class Server{
         catch(Exception e){
             e.printStackTrace();
         }
+
+        final DatabaseManager dbm = server.dbm;
+        //Terminal Server
+        new Thread(() -> {
+            try (Scanner scanner = new Scanner(System.in)) {
+                while (true) {
+                    System.out.print("");
+                    String input = scanner.nextLine();
+                    String[] command = input.split(" ");
+                    switch (command[0].toUpperCase()) {
+                        case "/DELETEMSG":
+                            try{
+                                dbm.deleteMsg(Integer.parseInt(command[1]));
+                                System.out.println("Message (" + command[1] + ")supprimé.");
+                            }
+                            catch(Exception e){
+                                System.out.println("Erreur lors de la suppression du message, veuillez vérifier qu'il existe bien. \n");
+                            }
+                            break;
+                        case "/DELETEUSER":
+                            try{
+                                String username = dbm.deleteUser(command[1]);
+                                System.out.println("L'utilisateur '" + username + "' a été supprimé.");
+                            }
+                            catch(Exception e){
+                                System.out.println("Erreur lors de la suppression de l'utilisateur, veuillez vérifier qu'il existe bien. \n");
+                            }
+                            break;
+                    }
+                }
+            }
+        }).start();
 
         //Server
         if(server.dbm != null){

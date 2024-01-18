@@ -211,6 +211,87 @@ public class DatabaseManager {
         }
     }
 
+    public void deleteMsg(Integer idUser, Integer idMessage) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            PreparedStatement s = this.connexionBD.prepareStatement("delete from MESSAGES where idMessage=? and idUtilisateur=?");
+            s.setInt(1, idMessage);
+            s.setInt(2, idUser);
+            int nbLigneSuppr = s.executeUpdate();
+            if(nbLigneSuppr == 0){
+                throw new SQLException();
+            }
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public String deleteUser(String pseudo) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            int idUser = getId(pseudo);
+            clearRelationShip(idUser);
+            PreparedStatement s = this.connexionBD.prepareStatement("delete from UTILISATEUR where idUtilisateur=?");
+            s.setInt(1, idUser);
+            int nbLigneSuppr = s.executeUpdate();
+            if(nbLigneSuppr == 0){
+                throw new SQLException();
+            }
+            return pseudo;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public void clearRelationShip(Integer idUser) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            PreparedStatement s = this.connexionBD.prepareStatement("delete from FOLLOW where idUtilisateur1=? or idUtilisateur2=?");
+            s.setInt(1, idUser);
+            s.setInt(2, idUser);
+            s.executeUpdate();
+            PreparedStatement s2 = this.connexionBD.prepareStatement("delete from LIKES where idUtilisateur=?");
+            s2.setInt(1, idUser);
+            s2.executeUpdate();
+            PreparedStatement s3 = this.connexionBD.prepareStatement("delete from MESSAGES where idUtilisateur=?");
+            s3.setInt(1, idUser);
+            s3.executeUpdate();
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public void deleteMsg(Integer idMessage) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            clearLikesMessage(idMessage);
+            PreparedStatement s = this.connexionBD.prepareStatement("delete from MESSAGES where idMessage=?");
+            s.setInt(1, idMessage);
+            int nbLigneSuppr = s.executeUpdate();
+            if(nbLigneSuppr == 0){
+                throw new SQLException();
+            }
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public void clearLikesMessage(Integer idMessage) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            PreparedStatement s = this.connexionBD.prepareStatement("delete from LIKES where idMessage=?");
+            s.setInt(1, idMessage);
+            s.executeUpdate();
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
     public static String hash(final String base) {
         try{
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
