@@ -1,23 +1,29 @@
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+
+import com.google.gson.Gson;
 
 public class Message {
     private String dateEnvoi;
     private String message;
     private Utilisateur sender;
-    private List<Utilisateur> likes;
-    private int nbLikes;
+    private Integer idMessage;
 
-    public Message(String message, Utilisateur autheur){
+    public Message(String message, Utilisateur sender){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm:ss");
-        LocalDate localDate = LocalDate.now();
-        this.dateEnvoi = dtf.format(localDate);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        this.dateEnvoi = dtf.format(localDateTime);
         this.message = message;
-        this.sender = autheur;
-        this.likes = new ArrayList<Utilisateur>();
-        this.nbLikes = 0;
+        this.sender = sender;
+    }
+
+    public Message(String message, Utilisateur sender, Integer idMessage){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.now();
+        this.dateEnvoi = dtf.format(localDateTime);
+        this.message = message;
+        this.sender = sender;
+        this.idMessage = idMessage;
     }
 
     public String getDate(){
@@ -32,20 +38,25 @@ public class Message {
         return this.sender;
     }
 
-    public String getPseudoClient(){
-        return this.sender.getPseudo();
+    public Integer getIdMessage(){
+        return this.idMessage;
     }
 
-    public void incrLikes(){
-        this.nbLikes += 1;
-    }
-
-    public void decrLikes(){
-        this.nbLikes -= 1;
+    public String formatMessage(){
+        String[] dateTime = this.dateEnvoi.split(" ");
+        String date = dateTime[0];
+        String time = dateTime[1];
+        return "ID Message: " + (this.idMessage != null ? this.idMessage : "N/A") + " - " + this.sender.getPseudo() + " a Tuité à " + time + " le " + date + " - " + this.message;
     }
 
     @Override
     public String toString() {
-        return this.getPseudoClient() + ": " + this.getMessage();
+        Gson gson = new Gson();
+        return "{ \"dateEnvoi\": \"" + this.dateEnvoi + "\", \"message\": \"" + this.message + "\", \"sender\": " + gson.toJson(this.sender) + " }";
+    }
+
+    public String toString(int idMessage) {
+        Gson gson = new Gson();
+        return "{ \"idMessage\": " + idMessage + ", \"dateEnvoi\": \"" + this.dateEnvoi + "\", \"message\": \"" + this.message + "\", \"sender\": " + gson.toJson(this.sender) + " }";
     }
 }

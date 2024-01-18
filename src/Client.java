@@ -3,6 +3,9 @@ import java.net.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
 public class Client{
     private Utilisateur user;
 
@@ -132,27 +135,41 @@ public class Client{
                 // Créer un thread secondaire pour lire les messages du serveur
                 new Thread(() -> {
                     try {
-                        String message;
-                        while ((message = reader.readLine()) != null) {
-                            System.out.println(message);
+                        Gson gson = new Gson();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            try {
+                                Message message = gson.fromJson(line, Message.class);
+                                System.out.println(message.formatMessage());
+                            } catch (JsonSyntaxException e) {
+                                System.out.println(line);
+                            }
                         }
                     } catch (IOException e) {
                         System.out.println("Error reading from server: " + e.getMessage());
                     }
                 }).start();
-        
+
                 // Thread d'envoi de message vers le serveur
                 System.out.print("Enter a message to send (or 'quit' to exit): \n");
                 while (true) {
                     String input = scanner.nextLine();
 
-                    if ("quit".equalsIgnoreCase(input)) {
-                        break;
+                    if(input.startsWith("/")){
+                        String[] command = input.split(" ");
+                        String commandToSend = "";
+                        for (String string : command) {
+                            commandToSend += string + "&";
+                        }
+                        writer.println(commandToSend);
                     }
-
-                    Message message = new Message(input, client.user);
-                    writer.println(message.toString());
-                    System.out.println("You sent: " + message.getMessage());
+                    else{
+                        if(!input.trim().equals("")){
+                            Message message = new Message(input, client.user);
+                            writer.println(message.toString());
+                            System.out.println("You sent: " + message.getMessage());
+                        }
+                    }
                 }
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());

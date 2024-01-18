@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
 import java.io.IOException;
 import java.net.*;
 import java.sql.SQLException;
@@ -15,6 +17,10 @@ public class Server{
         this.dbm = null;
     }
 
+    public void recu(String msg){ //TO SUPPR
+        System.out.println(msg);
+    }
+
     //Envoie du message à tout les utilisateurs connectés
     public void broadcast(String msg){
         for(ClientHandler liaisonClient : this.clients){
@@ -22,17 +28,25 @@ public class Server{
         }
     }
 
-    //Envoie du message à tout les utilisateurs connectés sauf le client précisé en paramètre
+    //Sauvegarde du message dans la base de données et envoie du message aux utilisateurs suivant l'utilisateur qui l'a envoyé
     public void broadcastFollower(Message msg){
-        // TODO -> Ajouter le message à la base de données et renvoyer le message aux clients concernés
-        //this.dbm.addMessage(msg);
-        Utilisateur sender = msg.getSender();
-        for(Utilisateur follower : sender.getFollowers()){
+        if(msg == null || msg.getMessage().trim().isEmpty()){
+            return;
+        }
+        System.out.println(msg.toString());
+        try{
+            int idMsg = this.dbm.addMessage(msg);
+            int idSender = msg.getSender().getId();
+            List<Integer> followers = this.dbm.getFollowers(idSender);
             for(ClientHandler liaisonClient : this.clients){
-                if(liaisonClient.getClient().getUser().equals(follower)){
-                    liaisonClient.broadcast(msg.toString());
+                if(followers.contains(liaisonClient.getUser().getId())){
+                    liaisonClient.broadcast(msg.toString(idMsg));
                 }
             }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            System.out.println("Erreur lors de la connexion au serveur.");
         }
     }
 
@@ -81,6 +95,83 @@ public class Server{
         }
     }
 
+    public Utilisateur follow(Integer idUser, String idUserToFollow) throws SQLException, ServerIssueException{
+        try{
+            Utilisateur userFollowed = this.dbm.follow(idUser, idUserToFollow);
+            return userFollowed;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public Utilisateur unfollow(Integer idUser, String idUserToUnfollow) throws SQLException, ServerIssueException{
+        try{
+            Utilisateur userUnfollowed = this.dbm.unfollow(idUser, idUserToUnfollow);
+            return userUnfollowed;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public Integer like(Integer idUser, Integer idMessage) throws SQLException, ServerIssueException{
+        try{
+            Integer newNombreLikes = this.dbm.like(idUser, idMessage);
+            return newNombreLikes;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public Integer unlike(Integer idUser, Integer idMessage) throws SQLException, ServerIssueException{
+        try{
+            Integer newNombreLikes = this.dbm.unlike(idUser, idMessage);
+            return newNombreLikes;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public Integer getNbLikes(Integer idMessage) throws SQLException, ServerIssueException{
+        try{
+            Integer nombreLikes = this.dbm.getNbLikes(idMessage);
+            return nombreLikes;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public void deleteMsg(Integer idUser, Integer idMessage) throws SQLException, ServerIssueException{
+        try{
+            this.dbm.deleteMsg(idUser, idMessage);
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
     public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();
@@ -96,6 +187,38 @@ public class Server{
             e.printStackTrace();
         }
 
+        final DatabaseManager dbm = server.dbm;
+        //Terminal Server
+        new Thread(() -> {
+            try (Scanner scanner = new Scanner(System.in)) {
+                while (true) {
+                    System.out.print("");
+                    String input = scanner.nextLine();
+                    String[] command = input.split(" ");
+                    switch (command[0].toUpperCase()) {
+                        case "/DELETEMSG":
+                            try{
+                                dbm.deleteMsg(Integer.parseInt(command[1]));
+                                System.out.println("Message (" + command[1] + ")supprimé.");
+                            }
+                            catch(Exception e){
+                                System.out.println("Erreur lors de la suppression du message, veuillez vérifier qu'il existe bien. \n");
+                            }
+                            break;
+                        case "/DELETEUSER":
+                            try{
+                                String username = dbm.deleteUser(command[1]);
+                                System.out.println("L'utilisateur '" + username + "' a été supprimé.");
+                            }
+                            catch(Exception e){
+                                System.out.println("Erreur lors de la suppression de l'utilisateur, veuillez vérifier qu'il existe bien. \n");
+                            }
+                            break;
+                    }
+                }
+            }
+        }).start();
+
         //Server
         if(server.dbm != null){
             try {
@@ -104,7 +227,7 @@ public class Server{
                 while (true) {
                     // Création d'un ClientHandler pour chaque nouvelle connexion
                     Socket socketClient = socketServeur.accept();
-                    ClientHandler client = new ClientHandler(new Client(), socketClient, server);
+                    ClientHandler client = new ClientHandler(new Utilisateur(), socketClient, server);
                     server.clients.add(client);
                     client.start();
                 }

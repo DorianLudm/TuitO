@@ -20,6 +20,7 @@ create table IF NOT EXISTS LIKES(
     FOREIGN KEY (idMessage) REFERENCES MESSAGES(idMessage)
 );
 
+-- Soit l'utilisateur 1 suit l'utilisateur 2
 create table IF NOT EXISTS FOLLOW(
     idUtilisateur1 INTEGER,
     idUtilisateur2 INTEGER CHECK (idUtilisateur1 != idUtilisateur2),
