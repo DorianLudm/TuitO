@@ -69,7 +69,7 @@ public class ClientHandler extends Thread{
             case "/FOLLOW":
                 try{
                     Utilisateur utilisateurFollowed = this.server.follow(this.user.getId(), command[1]);
-                    this.broadcast("Vous suivez désormais " + utilisateurFollowed.getPseudo() + "(" + command[1] + ")" + ".");
+                    this.broadcast("Vous suivez désormais l'utilisateur '" + utilisateurFollowed.getPseudo() + "'.");
                 }
                 catch(SQLException e){
                     this.broadcast("Vous suivez déjà cet utilisateur, ou alors il n'existe pas.");
@@ -81,7 +81,7 @@ public class ClientHandler extends Thread{
             case "/UNFOLLOW":
             try{
                 Utilisateur utilisateurUnfollowed = this.server.unfollow(this.user.getId(), command[1]);
-                this.broadcast("Vous ne suivez désormais plus " + utilisateurUnfollowed.getPseudo() + "(" + command[1] + ")" + ".");
+                this.broadcast("Vous ne suivez désormais plus l'utilisateur '" + utilisateurUnfollowed.getPseudo() + "'.");
             }
             catch(SQLException e){
                 this.broadcast("Vous ne suivez déjà pas cet utilisateur, ou alors il n'existe pas.");
