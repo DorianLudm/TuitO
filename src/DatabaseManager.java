@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -70,15 +69,34 @@ public class DatabaseManager {
         }
     }
 
-    public Utilisateur follow(Integer idUser, Integer idUserToFollow) throws SQLException{
+    public Utilisateur follow(Integer idUser, String pseudoUserToFollow) throws SQLException{
         this.st = this.connexionBD.createStatement();
         try{
-            String pseudoFollowed = getPseudo(idUserToFollow);
+            int idUserToFollow = getId(pseudoUserToFollow);
             PreparedStatement s = this.connexionBD.prepareStatement("insert into FOLLOW values (?, ?)");
             s.setInt(1, idUser);
             s.setInt(2, idUserToFollow);
             s.executeUpdate();
-            Utilisateur user = new Utilisateur(idUserToFollow, pseudoFollowed);
+            Utilisateur user = new Utilisateur(idUserToFollow, pseudoUserToFollow);
+            return user;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public Utilisateur unfollow(Integer idUser, String pseudoUserToUnfollow) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            int idUserToUnfollow = getId(pseudoUserToUnfollow);
+            PreparedStatement s = this.connexionBD.prepareStatement("delete from FOLLOW where idUtilisateur1=? and idUtilisateur2=?");
+            s.setInt(1, idUser);
+            s.setInt(2, idUserToUnfollow);
+            int nbLigneSuppr = s.executeUpdate();
+            if(nbLigneSuppr == 0){
+                throw new SQLException();
+            }
+            Utilisateur user = new Utilisateur(idUserToUnfollow, pseudoUserToUnfollow);
             return user;
         }
         catch(SQLException e){
@@ -98,16 +116,30 @@ public class DatabaseManager {
         }
     }
 
-    public void addMessage(Message message) throws SQLException{
+    public int getId(String pseudo) throws SQLException{
         this.st = this.connexionBD.createStatement();
+        ResultSet rs = this.st.executeQuery("select idUtilisateur from UTILISATEUR where pseudo='"+ pseudo +"'");
+        if(rs.next()){
+            int id = rs.getInt(1);
+            return id;
+        }
+        else{
+            throw new SQLException();
+        }
+    }
+
+    public int addMessage(Message message) throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        int newIdMessage = newIdMessage();
         PreparedStatement s = this.connexionBD.prepareStatement("insert into MESSAGES values (?, ?, ?, ?)");
-        s.setInt(1, newIdMessage());
+        s.setInt(1, newIdMessage);
         s.setInt(2, message.getSender().getId());
         s.setString(3, message.getMessage());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(message.getDate(), formatter);
         s.setTimestamp(4, java.sql.Timestamp.valueOf(dateTime));
         s.executeUpdate();
+        return newIdMessage;
     }
 
     public int newIdMessage() throws SQLException{

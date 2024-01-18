@@ -33,12 +33,12 @@ public class Server{
         }
         System.out.println(msg.toString());
         try{
-            this.dbm.addMessage(msg);
+            int idMsg = this.dbm.addMessage(msg);
             int idSender = msg.getSender().getId();
             List<Integer> followers = this.dbm.getFollowers(idSender);
             for(ClientHandler liaisonClient : this.clients){
                 if(followers.contains(liaisonClient.getUser().getId())){
-                    liaisonClient.broadcast(msg.toString());
+                    liaisonClient.broadcast(msg.toString(idMsg));
                 }
             }
         }
@@ -93,7 +93,7 @@ public class Server{
         }
     }
 
-    public Utilisateur follow(Integer idUser, Integer idUserToFollow) throws SQLException{
+    public Utilisateur follow(Integer idUser, String idUserToFollow) throws SQLException, ServerIssueException{
         try{
             Utilisateur userFollowed = this.dbm.follow(idUser, idUserToFollow);
             return userFollowed;
@@ -102,8 +102,20 @@ public class Server{
             throw new SQLException();
         }
         catch(Exception e){
-            System.out.println("Erreur lors de la connexion au serveur.");
-            return null;
+            throw new ServerIssueException();
+        }
+    }
+
+    public Utilisateur unfollow(Integer idUser, String idUserToUnfollow) throws SQLException, ServerIssueException{
+        try{
+            Utilisateur userUnfollowed = this.dbm.unfollow(idUser, idUserToUnfollow);
+            return userUnfollowed;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
         }
     }
 

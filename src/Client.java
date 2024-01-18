@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 public class Client{
     private Utilisateur user;
@@ -137,8 +138,12 @@ public class Client{
                         Gson gson = new Gson();
                         String line;
                         while ((line = reader.readLine()) != null) {
-                            Message message = gson.fromJson(line, Message.class);
-                            System.out.println(message.formatMessage());
+                            try {
+                                Message message = gson.fromJson(line, Message.class);
+                                System.out.println(message.formatMessage());
+                            } catch (JsonSyntaxException e) {
+                                System.out.println(line);
+                            }
                         }
                     } catch (IOException e) {
                         System.out.println("Error reading from server: " + e.getMessage());

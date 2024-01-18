@@ -68,7 +68,7 @@ public class ClientHandler extends Thread{
                 break;
             case "/FOLLOW":
                 try{
-                    Utilisateur utilisateurFollowed = this.server.follow(this.user.getId(), Integer.parseInt(command[1]));
+                    Utilisateur utilisateurFollowed = this.server.follow(this.user.getId(), command[1]);
                     this.broadcast("Vous suivez désormais " + utilisateurFollowed.getPseudo() + "(" + command[1] + ")" + ".");
                 }
                 catch(SQLException e){
@@ -78,24 +78,18 @@ public class ClientHandler extends Thread{
                     this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
                 }
                 break;
-            // case "/UNFOLLOW":
-            //     try{
-            //         this.client.unfollow(command[1]);
-            //         this.broadcast("Vous ne suivez plus " + command[1]);
-            //     }
-            //     catch(Exception e){
-            //         this.broadcast("Erreur lors de l'arrêt du suivi de l'utilisateur, veuillez réessayer.");
-            //     }
-            //     break;
-            // case "/TWEET":
-            //     try{
-            //         this.client.tweet(command[1]);
-            //         this.broadcast("Tweet envoyé.");
-            //     }
-            //     catch(Exception e){
-            //         this.broadcast("Erreur lors de l'envoi du tweet, veuillez réessayer.");
-            //     }
-            //     break;
+            case "/UNFOLLOW":
+            try{
+                Utilisateur utilisateurUnfollowed = this.server.unfollow(this.user.getId(), command[1]);
+                this.broadcast("Vous ne suivez désormais plus " + utilisateurUnfollowed.getPseudo() + "(" + command[1] + ")" + ".");
+            }
+            catch(SQLException e){
+                this.broadcast("Vous ne suivez déjà pas cet utilisateur, ou alors il n'existe pas.");
+            }
+            catch(Exception e){
+                this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
+            }
+            break;
             // case "/LIKE":
             //     try{
             //         this.client.like(Integer.parseInt(command[1]));
