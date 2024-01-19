@@ -56,6 +56,10 @@ public class ClientHandler extends Thread{
                 break;
             case "/REGISTER":
                 try{
+                    if(command[1].contains(" ") || command[2].contains(" ")){
+                        this.broadcast("Split");
+                        break;
+                    }
                     Integer idUser = this.server.register(command[1], command[2]);
                     Utilisateur user = this.server.loadUser(idUser);
                     this.user = user;
@@ -211,6 +215,11 @@ public class ClientHandler extends Thread{
                 catch(Exception e){
                     this.broadcast("Une erreur est survenue lors de la récupération de vos follows.");
                 }
+                break;
+            case "/QUIT":
+                this.broadcast("/QUIT");
+                this.server.close(this);
+                this.close();
                 break;
         }
     }
