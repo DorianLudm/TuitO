@@ -37,7 +37,7 @@ public class Server{
         try{
             int idMsg = this.dbm.addMessage(msg);
             int idSender = msg.getSender().getId();
-            List<Integer> followers = this.dbm.getFollowers(idSender);
+            List<Integer> followers = this.dbm.getIdFollowers(idSender);
             for(ClientHandler liaisonClient : this.clients){
                 if(followers.contains(liaisonClient.getUser().getId())){
                     liaisonClient.broadcast(msg.toString(idMsg));
@@ -188,6 +188,32 @@ public class Server{
         try{
             List<Message> historique = this.dbm.getHistorique(idUtilisateur, nombreMessages);
             return historique;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public List<Utilisateur> getFollowers(Integer idUtilisateur) throws SQLException, ServerIssueException{
+        try{
+            List<Utilisateur> followers = this.dbm.getFollowers(idUtilisateur);
+            return followers;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public List<Utilisateur> getFollowing(Integer idUtilisateur) throws SQLException, ServerIssueException{
+        try{
+            List<Utilisateur> followers = this.dbm.getFollowing(idUtilisateur);
+            return followers;
         }
         catch(SQLException e){
             throw new SQLException();

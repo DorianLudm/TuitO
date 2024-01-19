@@ -146,7 +146,7 @@ public class ClientHandler extends Thread{
             case "/HISTORIQUE":
                 try{
                     List<Message> historique = this.server.getHistorique(this.user.getId(), Integer.parseInt(command[1]));
-                    for (int i = historique.size() - 1; i >= 0; i--) {
+                    for (int i = historique.size(); i >=  historique.size() - 10; i--) {
                         Message message = historique.get(i);
                         this.broadcast(message.formatMessage());
                     }
@@ -156,6 +156,60 @@ public class ClientHandler extends Thread{
                 }
                 catch(Exception e){
                     this.broadcast("Une erreur est survenue lors de la récupération de l'historique. \n Veuillez vérifier que le paramètre nombre de messages est bien un nombre.");
+                }
+                break;
+            case "/FOLLOWERS":
+                try{
+                    List<Utilisateur> followers = this.server.getFollowers(this.user.getId());
+                    if(followers.size() > 10){
+                        for(int i = followers.size()-10; i < followers.size(); i++){
+                            Utilisateur follower = followers.get(i);
+                            this.broadcast(follower.getPseudo() + " - " + follower.getId());
+                        }
+                        this.broadcast("+ " + (followers.size() - 10) + " autres followers.");
+                    }
+                    else{
+                        if(followers.size() == 0){
+                            this.broadcast("Personne ne vous follow :(");
+                            break;
+                        }
+                        for(Utilisateur follower : followers){
+                            this.broadcast(follower.getPseudo() + " - " + follower.getId());
+                        }
+                    }
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors de la récupération des followers, veuillez réessayer.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue lors de la récupération des followers.");
+                }
+                break;
+            case "/FOLLOWING":
+                try{
+                    List<Utilisateur> followings = this.server.getFollowing(this.user.getId());
+                    if(followings.size() > 10){
+                        for(int i = followings.size()-10; i < followings.size(); i++){
+                            Utilisateur following = followings.get(i);
+                            this.broadcast(following.getPseudo() + " - " + following.getId());
+                        }
+                        this.broadcast("+ " + (followings.size() - 10) + " autres followings.");
+                    }
+                    else{
+                        if(followings.size() == 0){
+                            this.broadcast("Vous ne followez personne :(");
+                            break;
+                        }
+                        for(Utilisateur following : followings){
+                            this.broadcast(following.getPseudo() + " - " + following.getId());
+                        }
+                    }
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors de la récupération de vos follows, veuillez réessayer.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue lors de la récupération de vos follows.");
                 }
                 break;
         }

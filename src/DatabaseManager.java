@@ -152,7 +152,7 @@ public class DatabaseManager {
         return 1;
     }
 
-    public List<Integer> getFollowers(int idSender) throws SQLException{
+    public List<Integer> getIdFollowers(int idSender) throws SQLException{
         try{
             this.st = this.connexionBD.createStatement();
             ResultSet rs = this.st.executeQuery("select idUtilisateur1 from FOLLOW where idUtilisateur2='"+ idSender +"'");
@@ -327,6 +327,40 @@ public class DatabaseManager {
                 messages.add(msg);
             }
             return messages;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public List<Utilisateur> getFollowers(Integer idUtilisateur) throws SQLException{
+        try{
+            this.st = this.connexionBD.createStatement();
+            ResultSet rs = this.st.executeQuery("select idUtilisateur1 from FOLLOW where idUtilisateur2='"+ idUtilisateur +"'");
+            List<Utilisateur> followers = new ArrayList<>();
+            while(rs.next()){
+                int idFollower = rs.getInt(1);
+                Utilisateur follower = loadUser(idFollower);
+                followers.add(follower);
+            }
+            return followers;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public List<Utilisateur> getFollowing(Integer idUtilisateur) throws SQLException{
+        try{
+            this.st = this.connexionBD.createStatement();
+            ResultSet rs = this.st.executeQuery("select idUtilisateur2 from FOLLOW where idUtilisateur1='"+ idUtilisateur +"'");
+            List<Utilisateur> followings = new ArrayList<>();
+            while(rs.next()){
+                int idFollowing = rs.getInt(1);
+                Utilisateur following = loadUser(idFollowing);
+                followings.add(following);
+            }
+            return followings;
         }
         catch(SQLException e){
             throw new SQLException();
