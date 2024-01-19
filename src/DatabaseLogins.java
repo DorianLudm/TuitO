@@ -32,7 +32,7 @@ public class DatabaseLogins {
             try {
                 File file = new File("configBD.txt");
                 Scanner scanner = new Scanner(file);
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 8; i++) {
                     if (scanner.hasNextLine()) {
                         scanner.nextLine();
                     }
