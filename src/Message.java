@@ -26,6 +26,13 @@ public class Message {
         this.idMessage = idMessage;
     }
 
+    public Message(String dateEnvoie, String message, Utilisateur sender, Integer idMessage){
+        this.dateEnvoi = dateEnvoie;
+        this.message = message;
+        this.sender = sender;
+        this.idMessage = idMessage;
+    }
+
     public String getDate(){
         return this.dateEnvoi;
     }

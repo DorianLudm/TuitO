@@ -37,7 +37,7 @@ public class Server{
         try{
             int idMsg = this.dbm.addMessage(msg);
             int idSender = msg.getSender().getId();
-            List<Integer> followers = this.dbm.getFollowers(idSender);
+            List<Integer> followers = this.dbm.getIdFollowers(idSender);
             for(ClientHandler liaisonClient : this.clients){
                 if(followers.contains(liaisonClient.getUser().getId())){
                     liaisonClient.broadcast(msg.toString(idMsg));
@@ -172,6 +172,57 @@ public class Server{
         }
     }
 
+    public void deleteAll() throws SQLException, ServerIssueException{
+        try{
+            this.dbm.deleteAll();
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public List<Message> getHistorique(Integer idUtilisateur, int nombreMessages) throws SQLException, ServerIssueException{
+        try{
+            List<Message> historique = this.dbm.getHistorique(idUtilisateur, nombreMessages);
+            return historique;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public List<Utilisateur> getFollowers(Integer idUtilisateur) throws SQLException, ServerIssueException{
+        try{
+            List<Utilisateur> followers = this.dbm.getFollowers(idUtilisateur);
+            return followers;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public List<Utilisateur> getFollowing(Integer idUtilisateur) throws SQLException, ServerIssueException{
+        try{
+            List<Utilisateur> followers = this.dbm.getFollowing(idUtilisateur);
+            return followers;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
     public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();
@@ -212,6 +263,15 @@ public class Server{
                             }
                             catch(Exception e){
                                 System.out.println("Erreur lors de la suppression de l'utilisateur, veuillez vérifier qu'il existe bien. \n");
+                            }
+                            break;
+                        case "/DELETEALL":
+                            try{
+                                dbm.deleteAll();
+                                System.out.println("Tous les utilisateurs et messages ont été supprimés.");
+                            }
+                            catch(Exception e){
+                                System.out.println("Erreur lors de la suppression des utilisateurs et messages. \n");
                             }
                             break;
                     }

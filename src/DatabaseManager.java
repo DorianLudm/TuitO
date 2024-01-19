@@ -152,7 +152,7 @@ public class DatabaseManager {
         return 1;
     }
 
-    public List<Integer> getFollowers(int idSender) throws SQLException{
+    public List<Integer> getIdFollowers(int idSender) throws SQLException{
         try{
             this.st = this.connexionBD.createStatement();
             ResultSet rs = this.st.executeQuery("select idUtilisateur1 from FOLLOW where idUtilisateur2='"+ idSender +"'");
@@ -286,6 +286,81 @@ public class DatabaseManager {
             PreparedStatement s = this.connexionBD.prepareStatement("delete from LIKES where idMessage=?");
             s.setInt(1, idMessage);
             s.executeUpdate();
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public void deleteAll() throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            PreparedStatement s = this.connexionBD.prepareStatement("delete from LIKES");
+            s.executeUpdate();
+            PreparedStatement s2 = this.connexionBD.prepareStatement("delete from FOLLOW");
+            s2.executeUpdate();
+            PreparedStatement s3 = this.connexionBD.prepareStatement("delete from MESSAGES");
+            s3.executeUpdate();
+            PreparedStatement s4 = this.connexionBD.prepareStatement("delete from UTILISATEUR");
+            s4.executeUpdate();
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public List<Message> getHistorique(int idUser, int nbMessages) throws SQLException{
+        try{
+            if(nbMessages <= 0){
+                throw new SQLException();
+            }
+            this.st = this.connexionBD.createStatement();
+            ResultSet rs = this.st.executeQuery("select * from MESSAGES where idUtilisateur='"+ idUser +"' order by dateEnvoiMessage desc limit "+ nbMessages);
+            List<Message> messages = new ArrayList<>();
+            while(rs.next()){
+                int idMessage = rs.getInt(1);
+                int idSender = rs.getInt(2);
+                String message = rs.getString(3);
+                String date = rs.getTimestamp(4).toString();
+                Utilisateur sender = loadUser(idSender);
+                Message msg = new Message(date, message, sender, idMessage);
+                messages.add(msg);
+            }
+            return messages;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public List<Utilisateur> getFollowers(Integer idUtilisateur) throws SQLException{
+        try{
+            this.st = this.connexionBD.createStatement();
+            ResultSet rs = this.st.executeQuery("select idUtilisateur1 from FOLLOW where idUtilisateur2='"+ idUtilisateur +"'");
+            List<Utilisateur> followers = new ArrayList<>();
+            while(rs.next()){
+                int idFollower = rs.getInt(1);
+                Utilisateur follower = loadUser(idFollower);
+                followers.add(follower);
+            }
+            return followers;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public List<Utilisateur> getFollowing(Integer idUtilisateur) throws SQLException{
+        try{
+            this.st = this.connexionBD.createStatement();
+            ResultSet rs = this.st.executeQuery("select idUtilisateur2 from FOLLOW where idUtilisateur1='"+ idUtilisateur +"'");
+            List<Utilisateur> followings = new ArrayList<>();
+            while(rs.next()){
+                int idFollowing = rs.getInt(1);
+                Utilisateur following = loadUser(idFollowing);
+                followings.add(following);
+            }
+            return followings;
         }
         catch(SQLException e){
             throw new SQLException();

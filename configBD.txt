@@ -1,0 +1,11 @@
+Utilisez la commande mysql (ou sudo mysql) pour vous connecter. Créer ou utiliser une BD et éxécuter le script de création sur celle-ci.
+Désormais, entrer les commandes suivantes:
+CREATE USER 'userServer'@'localhost' IDENTIFIED BY 'serverPassword';
+GRANT ALL PRIVILEGES ON database_name.* TO 'userServer'@'localhost'; //Attention de modifier database_name par le nom de votre BD.
+FLUSH PRIVILEGES;
+Positionnez enfin sur la ligne 9 le nom de votre BD utilisé jusqu'à présent. Enfin, modifier la ligne 10 par "userServer" et la ligne 11 par "serverPassword"
+Si jamais vous ne réussissez pas à utiliser ce document, veuillez directement modifier le code de la fonction "ConnexionBD.connecter()"
+
+Dorian
+dorian
+ludmann

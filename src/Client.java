@@ -108,6 +108,10 @@ public class Client{
                                     System.out.println("\n--- Erreur d'inscription ---");
                                     System.out.println("Ce pseudo est déjà utilisé. Veuillez en choisir un autre.");
                                 }
+                                if("Split".equals(response[0])){
+                                    System.out.println("\n--- Erreur d'inscription ---");
+                                    System.out.println("Votre pseudo ou votre mot de passe est composé (contient un espace). Veuillez en choisir un autre.");
+                                }
                                 else{
                                     System.out.println("\n--- Erreur d'inscription ---");
                                     System.out.println("Un problème est survenu lors de la connexion au serveur.");
@@ -142,6 +146,10 @@ public class Client{
                                 Message message = gson.fromJson(line, Message.class);
                                 System.out.println(message.formatMessage());
                             } catch (JsonSyntaxException e) {
+                                if(line.contains("/QUIT")){
+                                    System.out.println("Vous avez été déconnecté du serveur.");
+                                    System.exit(0);
+                                }
                                 System.out.println(line);
                             }
                         }
@@ -151,7 +159,7 @@ public class Client{
                 }).start();
 
                 // Thread d'envoi de message vers le serveur
-                System.out.print("Enter a message to send (or 'quit' to exit): \n");
+                System.out.print("Enter a message to send (or '/quit' to exit): \n");
                 while (true) {
                     String input = scanner.nextLine();
 

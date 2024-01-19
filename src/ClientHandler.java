@@ -3,6 +3,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.List;
+
 import com.google.gson.Gson;
 
 public class ClientHandler extends Thread{
@@ -54,6 +56,10 @@ public class ClientHandler extends Thread{
                 break;
             case "/REGISTER":
                 try{
+                    if(command[1].contains(" ") || command[2].contains(" ")){
+                        this.broadcast("Split");
+                        break;
+                    }
                     Integer idUser = this.server.register(command[1], command[2]);
                     Utilisateur user = this.server.loadUser(idUser);
                     this.user = user;
@@ -75,7 +81,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous suivez déjà cet utilisateur, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
+                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer. \n Veuillez vérifier que le paramètre id de l'utilisateur est bien un nombre.");
                 }
                 break;
             case "/UNFOLLOW":
@@ -87,7 +93,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous ne suivez déjà pas cet utilisateur, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
+                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer. \n Veuillez vérifier que le paramètre id de l'utilisateur est bien un nombre.");
                 }
                 break;
             case "/LIKE":
@@ -99,7 +105,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous aimez déjà ce tuit, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Une erreur est survenue avec le serveur.");
+                    this.broadcast("Une erreur est survenue avec le serveur. \n Veuillez vérifier que le paramètre id du tuit est bien un nombre.");
                 }
                 break;
             case "/UNLIKE":
@@ -111,7 +117,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous n'avez pas likez ce tuit, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Une erreur est survenue avec le serveur.");
+                    this.broadcast("Une erreur est survenue avec le serveur. \n Veuillez vérifier que le paramètre id du tuit est bien un nombre.");
                 }
                 break;
             case "/GETLIKES":
@@ -125,7 +131,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Erreur lors de la récupération du nombre de likes du tuit, veuillez réessayer.");
                 }
                 catch(Exception e){
-                    this.broadcast("Une erreur est survenue lors de la récupération du nombre de likes du tuit.");
+                    this.broadcast("Une erreur est survenue lors de la récupération du nombre de likes du tuit. \n Veuillez vérifier que le paramètre id du tuit est bien un nombre.");
                 }
                 break;
             case "/DELETE":
@@ -138,8 +144,83 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous n'êtes pas l'auteur de ce tuit, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Erreur lors de la suppression du tuit, veuillez réessayer.");
+                    this.broadcast("Erreur lors de la suppression du tuit. \n Veuillez vérifier que le paramètre id du tuit est bien un nombre.");
                 }
+            case "/HISTORY":
+            case "/HISTORIQUE":
+                try{
+                    List<Message> historique = this.server.getHistorique(this.user.getId(), Integer.parseInt(command[1]));
+                    for (int i = historique.size(); i >=  historique.size() - 10; i--) {
+                        Message message = historique.get(i);
+                        this.broadcast(message.formatMessage());
+                    }
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors de la récupération de l'historique, veuillez réessayer.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue lors de la récupération de l'historique. \n Veuillez vérifier que le paramètre nombre de messages est bien un nombre.");
+                }
+                break;
+            case "/FOLLOWERS":
+                try{
+                    List<Utilisateur> followers = this.server.getFollowers(this.user.getId());
+                    if(followers.size() > 10){
+                        for(int i = followers.size()-10; i < followers.size(); i++){
+                            Utilisateur follower = followers.get(i);
+                            this.broadcast(follower.getPseudo() + " - " + follower.getId());
+                        }
+                        this.broadcast("+ " + (followers.size() - 10) + " autres followers.");
+                    }
+                    else{
+                        if(followers.size() == 0){
+                            this.broadcast("Personne ne vous follow :(");
+                            break;
+                        }
+                        for(Utilisateur follower : followers){
+                            this.broadcast(follower.getPseudo() + " - " + follower.getId());
+                        }
+                    }
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors de la récupération des followers, veuillez réessayer.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue lors de la récupération des followers.");
+                }
+                break;
+            case "/FOLLOWING":
+                try{
+                    List<Utilisateur> followings = this.server.getFollowing(this.user.getId());
+                    if(followings.size() > 10){
+                        for(int i = followings.size()-10; i < followings.size(); i++){
+                            Utilisateur following = followings.get(i);
+                            this.broadcast(following.getPseudo() + " - " + following.getId());
+                        }
+                        this.broadcast("+ " + (followings.size() - 10) + " autres followings.");
+                    }
+                    else{
+                        if(followings.size() == 0){
+                            this.broadcast("Vous ne followez personne :(");
+                            break;
+                        }
+                        for(Utilisateur following : followings){
+                            this.broadcast(following.getPseudo() + " - " + following.getId());
+                        }
+                    }
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors de la récupération de vos follows, veuillez réessayer.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue lors de la récupération de vos follows.");
+                }
+                break;
+            case "/QUIT":
+                this.broadcast("/QUIT");
+                this.server.close(this);
+                this.close();
+                break;
         }
     }
 
