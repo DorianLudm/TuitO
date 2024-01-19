@@ -199,7 +199,7 @@ public class Server{
                         case "/DELETEMSG":
                             try{
                                 dbm.deleteMsg(Integer.parseInt(command[1]));
-                                System.out.println("Message (" + command[1] + ")supprimé.");
+                                System.out.println("Message (" + command[1] + ") supprimé.");
                             }
                             catch(Exception e){
                                 System.out.println("Erreur lors de la suppression du message, veuillez vérifier qu'il existe bien. \n");
