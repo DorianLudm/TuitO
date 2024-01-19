@@ -1,0 +1,7 @@
+Positionnez de manière suivante les identifiants à votre base de donnée. Ligne 5: nomBD, Ligne 6: identifiantSQL, Ligne 7: passwordSQL.
+Il ce peut que vous n'aiez besoin de mettre que le nom de votre BD si vous utilisez la commande "sudo mysql".
+Si jamais vous ne réussissez pas à utiliser ce document, veuillez directement modifier le code de la fonction "ConnexionBD.connecter()"
+
+Dorian
+dorian
+ludmann

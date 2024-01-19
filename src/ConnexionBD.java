@@ -3,14 +3,16 @@ import java.sql.*;
 public class ConnexionBD {
 	private Connection mysql=null;
 	private boolean connecte=false;
+	private DatabaseLogins logins;
 
 	public ConnexionBD() throws ClassNotFoundException{
 		Class.forName("org.mariadb.jdbc.Driver");
+		this.logins = DatabaseLogins.getInstance();
 	}
 
 	public void connecter() throws SQLException {
 		//this.mysql = DriverManager.getConnection("jdbc:mysql://servinfo-maria:3306/DBludmann", "ludmann", "ludmann"); //IUT
-		this.mysql = DriverManager.getConnection("jdbc:mariadb://localhost:3306/Dorian", "dorian", "ludmann"); //Local PC
+		this.mysql = DriverManager.getConnection("jdbc:mariadb://localhost:3306/" + logins.getNomBD(), logins.getNomUtilisateurSQL(), logins.getMotDePasseSQL()); //Local PC
 		this.connecte=this.mysql!=null;
     }
 	
