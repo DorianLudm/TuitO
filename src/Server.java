@@ -172,6 +172,31 @@ public class Server{
         }
     }
 
+    public void deleteAll() throws SQLException, ServerIssueException{
+        try{
+            this.dbm.deleteAll();
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public List<Message> getHistorique(Integer idUtilisateur, int nombreMessages) throws SQLException, ServerIssueException{
+        try{
+            List<Message> historique = this.dbm.getHistorique(idUtilisateur, nombreMessages);
+            return historique;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
     public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();
@@ -212,6 +237,15 @@ public class Server{
                             }
                             catch(Exception e){
                                 System.out.println("Erreur lors de la suppression de l'utilisateur, veuillez vérifier qu'il existe bien. \n");
+                            }
+                            break;
+                        case "/DELETEALL":
+                            try{
+                                dbm.deleteAll();
+                                System.out.println("Tous les utilisateurs et messages ont été supprimés.");
+                            }
+                            catch(Exception e){
+                                System.out.println("Erreur lors de la suppression des utilisateurs et messages. \n");
                             }
                             break;
                     }

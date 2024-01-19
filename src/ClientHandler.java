@@ -3,6 +3,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.List;
+
 import com.google.gson.Gson;
 
 public class ClientHandler extends Thread{
@@ -75,7 +77,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous suivez déjà cet utilisateur, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
+                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer. \n Veuillez vérifier que le paramètre id de l'utilisateur est bien un nombre.");
                 }
                 break;
             case "/UNFOLLOW":
@@ -87,7 +89,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous ne suivez déjà pas cet utilisateur, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer.");
+                    this.broadcast("Erreur lors du suivi de l'utilisateur, veuillez réessayer. \n Veuillez vérifier que le paramètre id de l'utilisateur est bien un nombre.");
                 }
                 break;
             case "/LIKE":
@@ -99,7 +101,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous aimez déjà ce tuit, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Une erreur est survenue avec le serveur.");
+                    this.broadcast("Une erreur est survenue avec le serveur. \n Veuillez vérifier que le paramètre id du tuit est bien un nombre.");
                 }
                 break;
             case "/UNLIKE":
@@ -111,7 +113,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous n'avez pas likez ce tuit, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Une erreur est survenue avec le serveur.");
+                    this.broadcast("Une erreur est survenue avec le serveur. \n Veuillez vérifier que le paramètre id du tuit est bien un nombre.");
                 }
                 break;
             case "/GETLIKES":
@@ -125,7 +127,7 @@ public class ClientHandler extends Thread{
                     this.broadcast("Erreur lors de la récupération du nombre de likes du tuit, veuillez réessayer.");
                 }
                 catch(Exception e){
-                    this.broadcast("Une erreur est survenue lors de la récupération du nombre de likes du tuit.");
+                    this.broadcast("Une erreur est survenue lors de la récupération du nombre de likes du tuit. \n Veuillez vérifier que le paramètre id du tuit est bien un nombre.");
                 }
                 break;
             case "/DELETE":
@@ -138,8 +140,24 @@ public class ClientHandler extends Thread{
                     this.broadcast("Vous n'êtes pas l'auteur de ce tuit, ou alors il n'existe pas.");
                 }
                 catch(Exception e){
-                    this.broadcast("Erreur lors de la suppression du tuit, veuillez réessayer.");
+                    this.broadcast("Erreur lors de la suppression du tuit. \n Veuillez vérifier que le paramètre id du tuit est bien un nombre.");
                 }
+            case "/HISTORY":
+            case "/HISTORIQUE":
+                try{
+                    List<Message> historique = this.server.getHistorique(this.user.getId(), Integer.parseInt(command[1]));
+                    for (int i = historique.size() - 1; i >= 0; i--) {
+                        Message message = historique.get(i);
+                        this.broadcast(message.formatMessage());
+                    }
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors de la récupération de l'historique, veuillez réessayer.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue lors de la récupération de l'historique. \n Veuillez vérifier que le paramètre nombre de messages est bien un nombre.");
+                }
+                break;
         }
     }
 

@@ -292,6 +292,47 @@ public class DatabaseManager {
         }
     }
 
+    public void deleteAll() throws SQLException{
+        this.st = this.connexionBD.createStatement();
+        try{
+            PreparedStatement s = this.connexionBD.prepareStatement("delete from LIKES");
+            s.executeUpdate();
+            PreparedStatement s2 = this.connexionBD.prepareStatement("delete from FOLLOW");
+            s2.executeUpdate();
+            PreparedStatement s3 = this.connexionBD.prepareStatement("delete from MESSAGES");
+            s3.executeUpdate();
+            PreparedStatement s4 = this.connexionBD.prepareStatement("delete from UTILISATEUR");
+            s4.executeUpdate();
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
+    public List<Message> getHistorique(int idUser, int nbMessages) throws SQLException{
+        try{
+            if(nbMessages <= 0){
+                throw new SQLException();
+            }
+            this.st = this.connexionBD.createStatement();
+            ResultSet rs = this.st.executeQuery("select * from MESSAGES where idUtilisateur='"+ idUser +"' order by dateEnvoiMessage desc limit "+ nbMessages);
+            List<Message> messages = new ArrayList<>();
+            while(rs.next()){
+                int idMessage = rs.getInt(1);
+                int idSender = rs.getInt(2);
+                String message = rs.getString(3);
+                String date = rs.getTimestamp(4).toString();
+                Utilisateur sender = loadUser(idSender);
+                Message msg = new Message(date, message, sender, idMessage);
+                messages.add(msg);
+            }
+            return messages;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
     public static String hash(final String base) {
         try{
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
