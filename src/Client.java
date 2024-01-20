@@ -6,23 +6,49 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * La classe Client représente un client de chat qui peut se connecter à un serveur de chat
+ * et échanger des messages avec d'autres utilisateurs.
+ */
 public class Client{
+    
     private Utilisateur user;
-
+    
+    /**
+     * Constructeur par défaut de la classe Client.
+     */
     public Client(){}
 
+    /**
+     * Constructeur de la classe Client avec initialisation de l'utilisateur.
+     * @param user L'utilisateur associé au client.
+     */
     public Client(Utilisateur user){
         this.user = user;
     }
 
+    /**
+     * Définit l'utilisateur associé au client.
+     * @param user L'utilisateur à définir.
+     */
     public void setUser(Utilisateur user){
         this.user = user;
     }
 
+    /**
+    * Obtient l'utilisateur associé au client.
+     * @return L'utilisateur associé au client.
+     */
     public Utilisateur getUser(){
         return this.user;
     }
 
+    /**
+     * Méthode principale du programme client. Établit une connexion avec le serveur
+     * de chat et permet à l'utilisateur de se connecter ou de s'inscrire.
+     * Une fois connecté, le client peut échanger des messages avec d'autres utilisateurs.
+     * @param args Les arguments de la ligne de commande (non utilisés dans cette application).
+     */
     public static void main(String[] args) {
         Client client = new Client();
         try{
