@@ -7,22 +7,38 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
+/**
+ * La classe ClientHandler gère les interactions avec un client connecté au serveur de chat.
+ */
 public class ClientHandler extends Thread{
     private Utilisateur user;
     private Socket socketClient;
     private Server server;
 
+    /**
+     * Constructeur de la classe ClientHandler.
+     * @param user L'utilisateur associé au client.
+     * @param socketClient La socket du client connecté.
+     * @param server Le serveur auquel le client est connecté.
+     */
     public ClientHandler(Utilisateur user, Socket socketClient, Server server){
         this.user = user;
         this.socketClient = socketClient;
         this.server = server;
     }
 
+    /**
+     * Obtient l'utilisateur associé à ce gestionnaire de client.
+     * @return L'utilisateur associé à ce gestionnaire de client.
+     */
     public Utilisateur getUser(){
         return this.user;
     }
 
-    // Envoie du message au client associé à l'instance de ClientHandler
+    /**
+     * Envoie un message au client associé à l'instance de ClientHandler
+     * @param message Le message à envoyer au client.
+     */
     public void broadcast(String message) {
         try {
             PrintWriter writer = new PrintWriter(this.socketClient.getOutputStream(), true);
@@ -32,6 +48,9 @@ public class ClientHandler extends Thread{
         }
     }
 
+    /**
+     * Ferme la connexion avec ce client et notifie le serveur de la fermeture.
+     */
     public void close(){
         try {
             this.socketClient.close();
@@ -41,6 +60,10 @@ public class ClientHandler extends Thread{
         this.server.close(this);
     }
 
+    /**
+     * Traite une commande reçue du client.
+     * @param line La commande à traiter.
+     */
     public void handleCommand(String line){
         this.server.recu(line); //TO SUPPR
         String[] command = line.split("&");
@@ -224,12 +247,19 @@ public class ClientHandler extends Thread{
         }
     }
 
+    /**
+     * Traite un message JSON reçu du client.
+     * @param line Le message JSON à traiter.
+     */
     public void handleMessage(String line){
         Gson gson = new Gson();
         Message message = gson.fromJson(line, Message.class);
         this.server.broadcastFollower(message);
     }
 
+    /**
+     * Exécute le thread, gérant les entrées du client.
+     */
     @Override
     public void run(){
         try {
