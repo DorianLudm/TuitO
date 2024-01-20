@@ -347,11 +347,37 @@ public class Server{
         }
     }
 
-    /**
+    public List<Message> loadMsgUponLogin(Integer idUtilisateur) throws SQLException, ServerIssueException{
+        try{
+            List<Message> messages = this.dbm.loadMsgUponLogin(idUtilisateur);
+            return messages;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public List<Message> getMsg(String pseudoUtilisateur) throws SQLException, ServerIssueException{
+        try{
+            List<Message> messages = this.dbm.getMsg(pseudoUtilisateur);
+            return messages;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
+    public static void main(String[] args) {
+      /**
      * Méthode principale pour exécuter le serveur.
      * @param args Les arguments de la ligne de commande.
      */
-    public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();
         ServerSocket socketServeur = null;
@@ -409,6 +435,13 @@ public class Server{
 
         //Server
         if(server.dbm != null){
+            if(server.connexionBD.isConnecte()){
+                System.out.println("Connexion à la base de données réussie.");
+            }
+            else{
+                System.out.println("Erreur lors de la connexion à la base de données.");
+                System.exit(0);
+            }
             try {
             socketServeur = new ServerSocket(port);
     
