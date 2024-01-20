@@ -347,6 +347,14 @@ public class Server{
         }
     }
 
+    /**
+     * Récupère la liste messages envoyés par les utilisateurs suivis d'un utilisateur donné lorsque celui-ci ce connecte.
+     * 
+     * @param idUtilisateur L'identifiant de l'utilisateur qui suit.
+     * @return La liste des messages envoyés par les utilisateurs suivis de l'utilisateur donné.
+     * @throws SQLException En cas d'erreur lors de l'accès à la base de données.
+     * @throws ServerIssueException En cas d'incident côté serveur.
+     */
     public List<Message> loadMsgUponLogin(Integer idUtilisateur) throws SQLException, ServerIssueException{
         try{
             List<Message> messages = this.dbm.loadMsgUponLogin(idUtilisateur);
@@ -360,6 +368,14 @@ public class Server{
         }
     }
 
+    /**
+     * Récupère la liste des messages d'un utilisateur.
+     * 
+     * @param pseudoUtilisateur Le pseudo de l'utilisateur.
+     * @return La liste des messages de l'utilisateur.
+     * @throws SQLException En cas d'erreur lors de l'accès à la base de données.
+     * @throws ServerIssueException En cas d'incident côté serveur.
+     */
     public List<Message> getMsg(String pseudoUtilisateur) throws SQLException, ServerIssueException{
         try{
             List<Message> messages = this.dbm.getMsg(pseudoUtilisateur);
