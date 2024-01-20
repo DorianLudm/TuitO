@@ -389,6 +389,28 @@ public class DatabaseManager {
         return messages;
     }
 
+    public List<Message> getMsg(String pseudo) throws SQLException{
+        try{
+            int idUser = getId(pseudo);
+            this.st = this.connexionBD.createStatement();
+            ResultSet rs = this.st.executeQuery("select * from MESSAGES where idUtilisateur='"+ idUser +"' order by dateEnvoiMessage asc");
+            List<Message> messages = new ArrayList<>();
+            while(rs.next()){
+                int idMessage = rs.getInt(1);
+                int idSender = rs.getInt(2);
+                String message = rs.getString(3);
+                String date = rs.getTimestamp(4).toString();
+                Utilisateur sender = loadUser(idSender);
+                Message msg = new Message(date, message, sender, idMessage);
+                messages.add(msg);
+            }
+            return messages;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+    }
+
     public static String hash(final String base) {
         try{
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
