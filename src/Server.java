@@ -413,7 +413,11 @@ public class Server{
         new Thread(() -> {
             try (Scanner scanner = new Scanner(System.in)) {
                 while (true) {
-                    System.out.print("");
+                    System.out.print("---------------------------------------- Command ----------------------------------------\n");
+                    System.out.print("|                     Enter /deleteuser {username} to delete an user                     |\n");
+                    System.out.print("|                         Enter /deletemsg {id} to delete a TUIT                         |\n");
+                    System.out.print("|                         Enter /deleteall to delete everythings                         |\n");
+                    System.out.print("------------------------------------------------------------------------------------------\n");
                     String input = scanner.nextLine();
                     String[] command = input.split(" ");
                     switch (command[0].toUpperCase()) {
