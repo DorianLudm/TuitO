@@ -55,6 +55,9 @@ public class Client{
                             
                             // Réception de la réponse du serveur
                             String line = reader.readLine();
+                            while(line == null){
+                                line = reader.readLine();
+                            }
                             String[] response = line.split("&");
                             if ("True".equals(response[0])) {
                                 isConnected = true;
@@ -70,8 +73,13 @@ public class Client{
                                     System.out.println("Identifiant ou mot de passe incorrect. Veuillez réessayer.");
                                 }
                                 else{
-                                    System.out.println("Un problème est survenu lors de la connexion au serveur.");
-                                    System.out.println(Arrays.toString(response));
+                                    if ("ERROR".equals(response[0])) {
+                                        System.out.println("Une erreur est survenue, veuillez ne pas utilisez de caractères spéciaux dans votre identifiant ou votre mot de passe.");
+                                    }
+                                    else{
+                                        System.out.println("Un problème est survenu lors de la connexion au serveur.");
+                                        System.out.println(Arrays.toString(response));
+                                    }
                                 }
                             }
                         }
@@ -145,12 +153,19 @@ public class Client{
                             try {
                                 Message message = gson.fromJson(line, Message.class);
                                 System.out.println(message.formatMessage());
-                            } catch (JsonSyntaxException e) {
+                            } catch (JsonSyntaxException e){
                                 if(line.contains("/QUIT")){
                                     System.out.println("Vous avez été déconnecté du serveur.");
                                     System.exit(0);
                                 }
-                                System.out.println(line);
+                                if(line.contains("/newline")){
+                                    System.out.println("");
+                                    System.out.println("Enter a message to send (or '/quit' to exit):");
+                                
+                                }
+                                else{
+                                    System.out.println(line);
+                                }
                             }
                         }
                     } catch (IOException e) {
@@ -158,8 +173,12 @@ public class Client{
                     }
                 }).start();
 
+                System.out.println("");
+                System.out.println("\n--- Bienvenue sur Tuit'O, voici ce que vous avez manqué! ---");
+                writer.println("/LOADMSG&" + client.user.getId());
+
                 // Thread d'envoi de message vers le serveur
-                System.out.print("Enter a message to send (or '/quit' to exit): \n");
+                Thread.sleep(400);
                 while (true) {
                     String input = scanner.nextLine();
 
@@ -179,6 +198,7 @@ public class Client{
                         }
                     }
                 }
+                
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             } finally {
