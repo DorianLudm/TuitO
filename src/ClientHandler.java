@@ -245,6 +245,7 @@ public class ClientHandler extends Thread{
                     else{
                         if(followers.size() == 0){
                             this.broadcast("Personne ne vous follow :(");
+                            this.broadcast("/newline");
                             break;
                         }
                         for(Utilisateur follower : followers){
