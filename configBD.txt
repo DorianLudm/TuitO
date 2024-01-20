@@ -6,6 +6,6 @@ FLUSH PRIVILEGES;
 Positionnez enfin sur la ligne 9 le nom de votre BD utilisé jusqu'à présent. Enfin, modifier la ligne 10 par "userServer" et la ligne 11 par "serverPassword"
 Si jamais vous ne réussissez pas à utiliser ce document, veuillez directement modifier le code de la fonction "ConnexionBD.connecter()"
 
-TUITO
-userServer
-serverPassword
+Dorian
+dorian
+ludmann
