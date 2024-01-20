@@ -159,7 +159,25 @@ public class Client{
                 }).start();
 
                 // Thread d'envoi de message vers le serveur
-                System.out.print("Enter a message to send (or '/quit' to exit): \n");
+                System.out.print("------------------------------------------ Command ------------------------------------------\n");
+                System.out.print("|                                 Enter a message to send                                   |\n");
+                System.out.print("|                         Enter /follow {username} to follow someone                        |\n");
+                System.out.print("|                       Enter /unfollow {username} to unfollow someone                      |\n");
+                System.out.print("|                         Enter /followers to see who follow you                            |\n");
+                System.out.print("|                         Enter /following to see who you follow                            |\n");
+                System.out.print("|                              Enter /like {id} to like a TUIT                              |\n");
+                System.out.print("|                            Enter /unlike {id} to unlike a TUIT                            |\n");
+                System.out.print("|   Enter /getlikes {id} or /getnblikes {id} or /nblikes {id} to see the likes of a TUIT    |\n");
+                System.out.print("|              Enter /history {x} or /historique {x} to see your x last TUIT                |\n");
+                System.out.print("|               Enter /remove {id} or /delete {id} to delete one of your TUIT               |\n");
+                System.out.print("|                          Enter /followers to see your followers                           |\n");
+                System.out.print("|                                   Enter /quit to exit                                     |\n");
+                System.out.print("---------------------------------------------------------------------------------------------\n\n");
+                System.out.print("-------------------Details-------------------\n");
+                System.out.print("| - {username} refer to a pseudo             |\n");
+                System.out.print("| - {id} refer to a TUIT id                  |\n");
+                System.out.print("---------------------------------------------|\n");
+
                 while (true) {
                     String input = scanner.nextLine();
 
