@@ -389,11 +389,11 @@ public class Server{
         }
     }
 
-    public static void main(String[] args) {
-      /**
+    /**
      * Méthode principale pour exécuter le serveur.
      * @param args Les arguments de la ligne de commande.
      */
+    public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();
         ServerSocket socketServeur = null;
