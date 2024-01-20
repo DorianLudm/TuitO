@@ -52,7 +52,15 @@ public class Client{
     public static void main(String[] args) {
         Client client = new Client();
         try{
-            Socket socketClient = new Socket("localhost", 8080);
+            String serverAddress = "localhost";
+            int serverPort = 8080;
+
+            if (args.length == 2) {
+                serverAddress = args[0];
+                serverPort = Integer.parseInt(args[1]);
+            }
+            Socket socketClient = new Socket(serverAddress, serverPort);
+            
             PrintWriter writer = new PrintWriter(socketClient.getOutputStream(), true);
             BufferedReader reader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
             Scanner scanner = new Scanner(System.in);
