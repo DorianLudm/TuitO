@@ -1,4 +1,0 @@
-Stockage des données du serveur:
-
-data: HashMap<Client, ArrayList<Client>, ArrayList<Message>>
-Clé > "Followers": List followers | "Messages": Liste des messages envoyés
