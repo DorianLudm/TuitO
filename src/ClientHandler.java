@@ -7,22 +7,38 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
+/**
+ * La classe ClientHandler gère les interactions avec un client connecté au serveur de chat.
+ */
 public class ClientHandler extends Thread{
     private Utilisateur user;
     private Socket socketClient;
     private Server server;
 
+    /**
+     * Constructeur de la classe ClientHandler.
+     * @param user L'utilisateur associé au client.
+     * @param socketClient La socket du client connecté.
+     * @param server Le serveur auquel le client est connecté.
+     */
     public ClientHandler(Utilisateur user, Socket socketClient, Server server){
         this.user = user;
         this.socketClient = socketClient;
         this.server = server;
     }
 
+    /**
+     * Obtient l'utilisateur associé à ce gestionnaire de client.
+     * @return L'utilisateur associé à ce gestionnaire de client.
+     */
     public Utilisateur getUser(){
         return this.user;
     }
 
-    // Envoie du message au client associé à l'instance de ClientHandler
+    /**
+     * Envoie un message au client associé à l'instance de ClientHandler
+     * @param message Le message à envoyer au client.
+     */
     public void broadcast(String message) {
         try {
             PrintWriter writer = new PrintWriter(this.socketClient.getOutputStream(), true);
@@ -32,6 +48,9 @@ public class ClientHandler extends Thread{
         }
     }
 
+    /**
+     * Ferme la connexion avec ce client et notifie le serveur de la fermeture.
+     */
     public void close(){
         try {
             this.socketClient.close();
@@ -41,6 +60,10 @@ public class ClientHandler extends Thread{
         this.server.close(this);
     }
 
+    /**
+     * Traite une commande reçue du client.
+     * @param line La commande à traiter.
+     */
     public void handleCommand(String line){
         this.server.recu(line); //TO SUPPR
         String[] command = line.split("&");
@@ -50,8 +73,11 @@ public class ClientHandler extends Thread{
                     Utilisateur user = this.server.login(command[1], command[2]);
                     this.user = user;
                     this.broadcast("True&" + this.user.getPseudo() + "&" + this.user.getId());
-                } catch (FalseLoginException e) {
+                } catch(FalseLoginException e) {
                     this.broadcast("False");
+                }
+                catch(Exception e){
+                    this.broadcast("ERROR");
                 }
                 break;
             case "/REGISTER":
@@ -72,10 +98,35 @@ public class ClientHandler extends Thread{
                     this.broadcast("False");
                 }
                 break;
+            case "/LOADMSG":
+                try{
+                    List<Message> messages = this.server.loadMsgUponLogin(Integer.parseInt(command[1]));
+                    if(messages.size() > 10){
+                        for(int i = messages.size()-10; i < messages.size(); i++){
+                            Message message = messages.get(i);
+                            this.broadcast(message.formatMessage());
+                        }
+                        this.broadcast("+ " + (messages.size() - 10) + " autres messages.");
+                        this.broadcast("/newline");
+                        break;
+                    }
+                    for (Message message : messages) {
+                        this.broadcast(message.formatMessage());
+                    }
+                    this.broadcast("/newline");
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors du chargement des messages, veuillez réessayer.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue lors du chargement des messages. \n Un problème interne est survenu.");
+                }
+                break;
             case "/FOLLOW":
                 try{
                     Utilisateur utilisateurFollowed = this.server.follow(this.user.getId(), command[1]);
                     this.broadcast("Vous suivez désormais l'utilisateur '" + utilisateurFollowed.getPseudo() + "'.");
+                    this.broadcast("/newline");
                 }
                 catch(SQLException e){
                     this.broadcast("Vous suivez déjà cet utilisateur, ou alors il n'existe pas.");
@@ -88,6 +139,7 @@ public class ClientHandler extends Thread{
                 try{
                     Utilisateur utilisateurUnfollowed = this.server.unfollow(this.user.getId(), command[1]);
                     this.broadcast("Vous ne suivez désormais plus l'utilisateur '" + utilisateurUnfollowed.getPseudo() + "'.");
+                    this.broadcast("/newline");
                 }
                 catch(SQLException e){
                     this.broadcast("Vous ne suivez déjà pas cet utilisateur, ou alors il n'existe pas.");
@@ -100,6 +152,7 @@ public class ClientHandler extends Thread{
                 try{
                     int nbLikes = this.server.like(this.user.getId(), Integer.parseInt(command[1]));
                     this.broadcast("Tuit liké. Il a désormais " + nbLikes + " likes.");
+                    this.broadcast("/newline");
                 }
                 catch(SQLException e){
                     this.broadcast("Vous aimez déjà ce tuit, ou alors il n'existe pas.");
@@ -112,6 +165,7 @@ public class ClientHandler extends Thread{
                 try{
                     int nbLikes = this.server.unlike(this.user.getId(), Integer.parseInt(command[1]));
                     this.broadcast("Vous n'aimez plus ce tuit. Il a désormais " + nbLikes + " likes.");
+                    this.broadcast("/newline");
                 }
                 catch(SQLException e){
                     this.broadcast("Vous n'avez pas likez ce tuit, ou alors il n'existe pas.");
@@ -126,6 +180,7 @@ public class ClientHandler extends Thread{
                 try{
                     Integer nbLikes = this.server.getNbLikes(Integer.parseInt(command[1]));
                     this.broadcast("Ce tuit a " + nbLikes + " likes.");
+                    this.broadcast("/newline");
                 }
                 catch(SQLException e){
                     this.broadcast("Erreur lors de la récupération du nombre de likes du tuit, veuillez réessayer.");
@@ -139,6 +194,7 @@ public class ClientHandler extends Thread{
                 try{
                     this.server.deleteMsg(this.user.getId() ,Integer.parseInt(command[1]));
                     this.broadcast("Le tuit (" + command[1] + ") a été supprimé.");
+                    this.broadcast("/newline");
                 }
                 catch(SQLException e){
                     this.broadcast("Vous n'êtes pas l'auteur de ce tuit, ou alors il n'existe pas.");
@@ -150,10 +206,24 @@ public class ClientHandler extends Thread{
             case "/HISTORIQUE":
                 try{
                     List<Message> historique = this.server.getHistorique(this.user.getId(), Integer.parseInt(command[1]));
-                    for (int i = historique.size(); i >=  historique.size() - 10; i--) {
-                        Message message = historique.get(i);
-                        this.broadcast(message.formatMessage());
+                    if(historique.size() > 10){
+                        for(int i = historique.size()-10; i < historique.size(); i++){
+                            Message msg = historique.get(i);
+                            this.broadcast(msg.formatMessage());
+                        }
+                        this.broadcast("+ " + (historique.size() - 10) + " autres messages.");
                     }
+                    else{
+                        if(historique.size() == 0){
+                            this.broadcast("Vous n'avez pas encore envoyé de message :(");
+                            break;
+                        }
+                        for (int i = historique.size() - 1; i >= 0; i--) {
+                            Message msg = historique.get(i);
+                            this.broadcast(msg.formatMessage());
+                        }
+                    }
+                    this.broadcast("/newline");
                 }
                 catch(SQLException e){
                     this.broadcast("Erreur lors de la récupération de l'historique, veuillez réessayer.");
@@ -181,6 +251,7 @@ public class ClientHandler extends Thread{
                             this.broadcast(follower.getPseudo() + " - " + follower.getId());
                         }
                     }
+                    this.broadcast("/newline");
                 }
                 catch(SQLException e){
                     this.broadcast("Erreur lors de la récupération des followers, veuillez réessayer.");
@@ -202,18 +273,53 @@ public class ClientHandler extends Thread{
                     else{
                         if(followings.size() == 0){
                             this.broadcast("Vous ne followez personne :(");
+                            this.broadcast("/newline");
                             break;
                         }
                         for(Utilisateur following : followings){
                             this.broadcast(following.getPseudo() + " - " + following.getId());
                         }
                     }
+                    this.broadcast("/newline");
                 }
                 catch(SQLException e){
                     this.broadcast("Erreur lors de la récupération de vos follows, veuillez réessayer.");
                 }
                 catch(Exception e){
                     this.broadcast("Une erreur est survenue lors de la récupération de vos follows.");
+                }
+                break;
+            case "/GETMSG":
+                try{
+                    List<Message> messages = this.server.getMsg(command[1]);
+                    if(messages.size() > 10){
+                        this.broadcast("Voici les 10 derniers messages de l'utilisateur " + command[1] + ":");
+                        for(int i = messages.size()-10; i < messages.size(); i++){
+                            Message message = messages.get(i);
+                            this.broadcast(message.formatMessage());
+                        }
+                        this.broadcast("+ " + (messages.size() - 10) + " autres messages.");
+                        this.broadcast("/newline");
+                        break;
+                    }
+                    else{
+                        if(messages.size() == 0){
+                            this.broadcast("Cet utilisateur n'a pas encore posté de message.");
+                            this.broadcast("/newline");
+                            break;
+                        }
+                        this.broadcast("Voici les derniers messages de l'utilisateur " + command[1] + ":");
+                        for(Message message : messages){
+                            this.broadcast(message.formatMessage());
+                        }
+                    }
+                    this.broadcast("/newline");
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors de la récupération des messages de l'utilisateur '"+ command[1] + "', veuillez vérifier qu'il existe.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue lors de la récupération des messages de l'utilisateur. \n Veuillez vérifier que le paramètre de l'utilisateur est bien donné.");
                 }
                 break;
             case "/QUIT":
@@ -224,12 +330,19 @@ public class ClientHandler extends Thread{
         }
     }
 
+    /**
+     * Traite un message JSON reçu du client.
+     * @param line Le message JSON à traiter.
+     */
     public void handleMessage(String line){
         Gson gson = new Gson();
         Message message = gson.fromJson(line, Message.class);
         this.server.broadcastFollower(message);
     }
 
+    /**
+     * Exécute le thread, gérant les entrées du client.
+     */
     @Override
     public void run(){
         try {

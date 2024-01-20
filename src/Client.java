@@ -6,23 +6,49 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+/**
+ * La classe Client représente un client de chat qui peut se connecter à un serveur de chat
+ * et échanger des messages avec d'autres utilisateurs.
+ */
 public class Client{
+    
     private Utilisateur user;
-
+    
+    /**
+     * Constructeur par défaut de la classe Client.
+     */
     public Client(){}
 
+    /**
+     * Constructeur de la classe Client avec initialisation de l'utilisateur.
+     * @param user L'utilisateur associé au client.
+     */
     public Client(Utilisateur user){
         this.user = user;
     }
 
+    /**
+     * Définit l'utilisateur associé au client.
+     * @param user L'utilisateur à définir.
+     */
     public void setUser(Utilisateur user){
         this.user = user;
     }
 
+    /**
+    * Obtient l'utilisateur associé au client.
+     * @return L'utilisateur associé au client.
+     */
     public Utilisateur getUser(){
         return this.user;
     }
 
+    /**
+     * Méthode principale du programme client. Établit une connexion avec le serveur
+     * de chat et permet à l'utilisateur de se connecter ou de s'inscrire.
+     * Une fois connecté, le client peut échanger des messages avec d'autres utilisateurs.
+     * @param args Les arguments de la ligne de commande (non utilisés dans cette application).
+     */
     public static void main(String[] args) {
         Client client = new Client();
         try{
@@ -55,6 +81,9 @@ public class Client{
                             
                             // Réception de la réponse du serveur
                             String line = reader.readLine();
+                            while(line == null){
+                                line = reader.readLine();
+                            }
                             String[] response = line.split("&");
                             if ("True".equals(response[0])) {
                                 isConnected = true;
@@ -70,8 +99,13 @@ public class Client{
                                     System.out.println("Identifiant ou mot de passe incorrect. Veuillez réessayer.");
                                 }
                                 else{
-                                    System.out.println("Un problème est survenu lors de la connexion au serveur.");
-                                    System.out.println(Arrays.toString(response));
+                                    if ("ERROR".equals(response[0])) {
+                                        System.out.println("Une erreur est survenue, veuillez ne pas utilisez de caractères spéciaux dans votre identifiant ou votre mot de passe.");
+                                    }
+                                    else{
+                                        System.out.println("Un problème est survenu lors de la connexion au serveur.");
+                                        System.out.println(Arrays.toString(response));
+                                    }
                                 }
                             }
                         }
@@ -145,18 +179,29 @@ public class Client{
                             try {
                                 Message message = gson.fromJson(line, Message.class);
                                 System.out.println(message.formatMessage());
-                            } catch (JsonSyntaxException e) {
+                            } catch (JsonSyntaxException e){
                                 if(line.contains("/QUIT")){
                                     System.out.println("Vous avez été déconnecté du serveur.");
                                     System.exit(0);
                                 }
-                                System.out.println(line);
+                                if(line.contains("/newline")){
+                                    System.out.println("");
+                                    System.out.println("Enter a message to send (or '/quit' to exit):");
+                                
+                                }
+                                else{
+                                    System.out.println(line);
+                                }
                             }
                         }
                     } catch (IOException e) {
                         System.out.println("Error reading from server: " + e.getMessage());
                     }
                 }).start();
+
+                System.out.println("");
+                System.out.println("\n--- Bienvenue sur Tuit'O, voici ce que vous avez manqué! ---");
+                writer.println("/LOADMSG&" + client.user.getId());
 
                 // Thread d'envoi de message vers le serveur
                 System.out.print("------------------------------------------ Command ------------------------------------------\n");
@@ -177,7 +222,8 @@ public class Client{
                 System.out.print("| - {username} refer to a pseudo             |\n");
                 System.out.print("| - {id} refer to a TUIT id                  |\n");
                 System.out.print("---------------------------------------------|\n");
-
+              
+                Thread.sleep(400);
                 while (true) {
                     String input = scanner.nextLine();
 
@@ -197,6 +243,7 @@ public class Client{
                         }
                     }
                 }
+                
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             } finally {
