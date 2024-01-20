@@ -183,9 +183,22 @@ public class ClientHandler extends Thread{
             case "/HISTORIQUE":
                 try{
                     List<Message> historique = this.server.getHistorique(this.user.getId(), Integer.parseInt(command[1]));
-                    for (int i = historique.size(); i >=  historique.size() - 10; i--) {
-                        Message message = historique.get(i);
-                        this.broadcast(message.formatMessage());
+                    if(historique.size() > 10){
+                        for(int i = historique.size()-10; i < historique.size(); i++){
+                            Message msg = historique.get(i);
+                            this.broadcast(msg.formatMessage());
+                        }
+                        this.broadcast("+ " + (historique.size() - 10) + " autres messages.");
+                    }
+                    else{
+                        if(historique.size() == 0){
+                            this.broadcast("Vous n'avez pas encore envoyé de message :(");
+                            break;
+                        }
+                        for (int i = historique.size() - 1; i >= 0; i--) {
+                            Message msg = historique.get(i);
+                            this.broadcast(msg.formatMessage());
+                        }
                     }
                     this.broadcast("/newline");
                 }
