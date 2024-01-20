@@ -223,6 +223,19 @@ public class Server{
         }
     }
 
+    public List<Message> loadMsgUponLogin(Integer idUtilisateur) throws SQLException, ServerIssueException{
+        try{
+            List<Message> messages = this.dbm.loadMsgUponLogin(idUtilisateur);
+            return messages;
+        }
+        catch(SQLException e){
+            throw new SQLException();
+        }
+        catch(Exception e){
+            throw new ServerIssueException();
+        }
+    }
+
     public static void main(String[] args) {
         int port = 8080;
         Server server = new Server();

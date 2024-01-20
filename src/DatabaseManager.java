@@ -367,6 +367,28 @@ public class DatabaseManager {
         }
     }
 
+    public List<Message> loadMsgUponLogin(Integer idUser) throws SQLException {
+        List<Message> messages = new ArrayList<>();
+        String query = "SELECT MESSAGES.* " +
+                       "FROM MESSAGES " +
+                       "JOIN FOLLOW ON MESSAGES.idUtilisateur = FOLLOW.idUtilisateur2 " +
+                       "WHERE FOLLOW.idUtilisateur1 = ? " +
+                       "ORDER BY MESSAGES.dateEnvoiMessage ASC";
+        try (PreparedStatement stmt = this.connexionBD.prepareStatement(query)) {
+            stmt.setInt(1, idUser);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Utilisateur sender = loadUser(rs.getInt("idUtilisateur"));
+                    Message message = new Message(rs.getTimestamp("dateEnvoiMessage").toString(), rs.getString("contenuMessage"), sender, rs.getInt("idMessage"));
+                    messages.add(message);
+                }
+            }
+        } catch (SQLException e){
+            throw new SQLException();
+        }
+        return messages;
+    }
+
     public static String hash(final String base) {
         try{
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");

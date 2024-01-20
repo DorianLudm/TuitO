@@ -158,7 +158,13 @@ public class Client{
                     }
                 }).start();
 
+                System.out.println("");
+                System.out.println("\n--- Bienvenue sur Tuit'O, voici ce que vous avez manqué! ---");
+                writer.println("/LOADMSG&" + client.user.getId());
+
                 // Thread d'envoi de message vers le serveur
+                Thread.sleep(1000);
+                System.out.println("");
                 System.out.print("Enter a message to send (or '/quit' to exit): \n");
                 while (true) {
                     String input = scanner.nextLine();
@@ -179,6 +185,7 @@ public class Client{
                         }
                     }
                 }
+                
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             } finally {

@@ -72,6 +72,28 @@ public class ClientHandler extends Thread{
                     this.broadcast("False");
                 }
                 break;
+            case "/LOADMSG":
+                try{
+                    List<Message> messages = this.server.loadMsgUponLogin(Integer.parseInt(command[1]));
+                    if(messages.size() > 10){
+                        for(int i = messages.size()-10; i < messages.size(); i++){
+                            Message message = messages.get(i);
+                            this.broadcast(message.formatMessage());
+                        }
+                        this.broadcast("+ " + (messages.size() - 10) + " autres messages.");
+                        break;
+                    }
+                    for (Message message : messages) {
+                        this.broadcast(message.formatMessage());
+                    }
+                }
+                catch(SQLException e){
+                    this.broadcast("Erreur lors du chargement des messages, veuillez réessayer.");
+                }
+                catch(Exception e){
+                    this.broadcast("Une erreur est survenue lors du chargement des messages. \n Veuillez vérifier que le paramètre nombre de messages est bien un nombre.");
+                }
+                break;
             case "/FOLLOW":
                 try{
                     Utilisateur utilisateurFollowed = this.server.follow(this.user.getId(), command[1]);
